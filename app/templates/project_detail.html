@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}{{ project.code }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="/projects" class="text-sm text-brand-700 hover:underline">← Projects</a>
+  <h1 class="text-2xl font-bold mt-2">{{ project.name }}</h1>
+  <p class="text-sm text-slate-600">{{ project.code }} · {{ project.client_name }} · {{ project.status.value }} · <span class="font-mono">{{ project.currency }}</span></p>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 mb-8">
+  <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+    <h2 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">Profit and loss snapshot</h2>
+    <p class="text-xs text-slate-500 mb-3">Costs include all POs (not cancelled) plus <strong>project cost lines</strong> that are not yet linked to a PO. Linked lines do not double-count (the PO amount is used).</p>
+    <ul class="text-sm space-y-2">
+      <li class="flex justify-between"><span>SO value (accepted/sent)</span><span class="tabular-nums font-medium">{{ so_value|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between"><span>Invoiced</span><span class="tabular-nums">{{ invoiced|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between"><span>PO cost</span><span class="tabular-nums">{{ po_cost|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between"><span>Pending cost lines (no PO)</span><span class="tabular-nums text-amber-800">{{ pending_cost|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between text-slate-700"><span>Total cost</span><span class="tabular-nums font-medium">{{ combined_cost|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between"><span>Approved claims</span><span class="tabular-nums">{{ claims_amt|amount }} {{ project.currency }}</span></li>
+      <li class="flex justify-between border-t pt-2 font-semibold text-emerald-700"><span>Est. profit</span><span class="tabular-nums">{{ profit|amount }} {{ project.currency }}</span></li>
+    </ul>
+    <a href="/projects/{{ project.id }}/pnl.pdf" class="inline-block mt-4 text-sm text-brand-700 font-medium hover:underline">Download profit and loss PDF</a>
+  </div>
+  <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+    <h2 class="font-semibold text-sm text-slate-500 uppercase tracking-wide mb-3">Quick actions</h2>
+    <div class="flex flex-wrap gap-2">
+      <a href="/quotations/new?project_id={{ project.id }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">New quotation</a>
+      <a href="/sales-orders/new?project_id={{ project.id }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">New sales order</a>
+      <a href="/purchase-orders/new?project_id={{ project.id }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">New PO</a>
+      <a href="/invoices/new?project_id={{ project.id }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">New invoice</a>
+      <a href="/claims/new?project_id={{ project.id }}" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">New claim</a>
+      {% if can_manage_schedule %}
+      <a href="/projects/{{ project.id }}/schedule" class="text-xs bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg">Assign schedule</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm mb-8">
+  <h2 class="font-semibold text-slate-900 mb-2">Project costs (PnL)</h2>
+  <p class="text-xs text-slate-600 mb-4">Add a cost line for budgeting or subcontract work. When you create a PO, link it to the line so the estimate is replaced by the real PO in PnL.</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="min-w-full text-sm">
+      <thead class="text-left text-xs uppercase text-slate-500 border-b border-slate-100">
+        <tr>
+          <th class="py-2 pr-4">Description</th>
+          <th class="py-2 pr-4">Amount</th>
+          <th class="py-2 pr-4">Vendor (optional)</th>
+          <th class="py-2 pr-4">Linked PO</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        {% for cl in cost_lines %}
+        <tr>
+          <td class="py-2 pr-4">{{ cl.description }}</td>
+          <td class="py-2 pr-4 tabular-nums">{{ cl.amount|amount }} {{ cl.currency }}</td>
+          <td class="py-2 pr-4 text-slate-600">{% if cl.vendor %}{{ cl.vendor.name }}{% else %}—{% endif %}</td>
+          <td class="py-2 pr-4">
+            {% if cl.purchase_order %}
+            <a href="/purchase-orders/{{ cl.purchase_order.id }}.pdf" class="text-brand-700 hover:underline">{{ cl.purchase_order.number }}</a>
+            {% elif cl.currency == project.currency %}
+            <a href="/purchase-orders/new?project_id={{ project.id }}&cost_line_id={{ cl.id }}" class="text-xs text-brand-700 hover:underline">Create PO →</a>
+            {% else %}
+            <span class="text-xs text-slate-400">Match project currency to link</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="py-4 text-slate-500">No cost lines yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wide mb-2">Add cost line</h3>
+  <form method="post" action="/projects/{{ project.id }}/cost-lines" class="grid md:grid-cols-12 gap-3 text-sm items-end">
+    <div class="md:col-span-4">
+      <label class="text-xs text-slate-600">Description</label>
+      <input name="description" required class="mt-1 w-full border rounded-lg px-2 py-1.5" placeholder="e.g. Electrical subcontract"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs text-slate-600">Amount</label>
+      <input name="amount" type="number" step="0.01" required class="mt-1 w-full border rounded-lg px-2 py-1.5"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs text-slate-600">Currency</label>
+      <select name="currency" class="mt-1 w-full border rounded-lg px-2 py-1.5 font-mono text-xs">
+        {% for c in currencies %}
+        <option value="{{ c }}" {% if c == project.currency %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="md:col-span-3">
+      <label class="text-xs text-slate-600">Vendor (optional)</label>
+      <select name="vendor_id" class="mt-1 w-full border rounded-lg px-2 py-1.5 text-xs">
+        <option value="">—</option>
+        {% for v in vendors %}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="md:col-span-12">
+      <label class="text-xs text-slate-600">Notes</label>
+      <input name="notes" class="mt-1 w-full border rounded-lg px-2 py-1.5" placeholder="Optional"/>
+    </div>
+    <div class="md:col-span-12">
+      <button type="submit" class="bg-brand-700 text-white text-xs font-medium px-4 py-2 rounded-lg">Add cost line</button>
+    </div>
+  </form>
+</div>
+
+<div class="grid md:grid-cols-2 gap-6 text-sm">
+  <div>
+    <h3 class="font-semibold mb-2">Quotations</h3>
+    <ul class="space-y-1">
+      {% for q in quotations %}
+      <li class="flex justify-between border-b border-slate-100 py-2">
+        <span>{{ q.number }} — {{ q.status.value }}</span>
+        <span><a href="/quotations/{{ q.id }}.pdf" class="text-brand-700 hover:underline">PDF</a></span>
+      </li>
+      {% else %}<li class="text-slate-500">None</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="font-semibold mb-2">Sales orders</h3>
+    <ul class="space-y-1">
+      {% for s in sales_orders %}
+      <li class="flex justify-between border-b border-slate-100 py-2">
+        <span>{{ s.number }} — {{ s.status.value }}</span>
+      </li>
+      {% else %}<li class="text-slate-500">None</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="font-semibold mb-2">Purchase orders</h3>
+    <ul class="space-y-1">
+      {% for po in purchase_orders %}
+      <li class="flex justify-between border-b border-slate-100 py-2">
+        <span>{{ po.number }} — {{ po.subcon_name }}{% if po.vendor_id %} <span class="text-slate-400">(registered)</span>{% endif %}</span>
+        <span><a href="/purchase-orders/{{ po.id }}.pdf" class="text-brand-700 hover:underline">PDF</a></span>
+      </li>
+      {% else %}<li class="text-slate-500">None</li>{% endfor %}
+    </ul>
+  </div>
+  <div>
+    <h3 class="font-semibold mb-2">Invoices</h3>
+    <ul class="space-y-1">
+      {% for i in invoices %}
+      <li class="flex justify-between border-b border-slate-100 py-2">
+        <span>{{ i.number }} — {{ i.basis.value }}</span>
+        <span><a href="/invoices/{{ i.id }}.pdf" class="text-brand-700 hover:underline">PDF</a></span>
+      </li>
+      {% else %}<li class="text-slate-500">None</li>{% endfor %}
+    </ul>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}Company settings · {{ company.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+  <div>
+    <a href="/companies" class="text-sm text-brand-700 hover:underline">← All companies</a>
+    <h1 class="text-2xl font-bold text-slate-900 mt-2">Company settings</h1>
+    <p class="text-sm text-slate-600 mt-1">{{ company.name }} · Document numbers use prefix <span class="font-mono">{{ company.doc_prefix }}</span> (e.g. QTN-{{ company.doc_prefix }}-YYMM-0001).</p>
+  </div>
+  <div class="flex flex-wrap gap-2 items-center">
+    {% if user.role.value in ['admin', 'gm', 'hr'] %}
+    <a href="/companies/{{ company.id }}/integrations/zkteco" class="text-xs border border-violet-200 bg-violet-50 text-violet-800 px-3 py-1.5 rounded-lg hover:bg-violet-100 font-medium">ZKTeco attendance</a>
+    {% endif %}
+    <form action="/switch-company" method="post" class="inline">
+      <input type="hidden" name="company_id" value="{{ company.id }}"/>
+      <button type="submit" class="text-xs border border-slate-300 bg-white px-3 py-1.5 rounded-lg hover:bg-slate-50">Set as active company</button>
+    </form>
+  </div>
+</div>
+
+{% if saved %}
+<p class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 mb-6">Settings saved.</p>
+{% endif %}
+{% if error %}
+<p class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-6">{{ error }}</p>
+{% endif %}
+
+{% if can_manage_company_members %}
+<div id="team-access" class="max-w-3xl mb-8 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <h2 class="text-lg font-semibold text-slate-900 mb-1">Who can see this company</h2>
+  <p class="text-sm text-slate-600 mb-4">Only users listed here can switch to <strong>{{ company.name }}</strong> on the dashboard and use its data. Creating a company does <strong>not</strong> add other accounts automatically — link them below.</p>
+  <div class="overflow-x-auto border border-slate-100 rounded-lg mb-4">
+    <table class="min-w-full text-sm">
+      <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
+        <tr>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Username</th>
+          <th class="px-4 py-2">Role</th>
+          <th class="px-4 py-2 w-24"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {% for uc_link, member in company_member_rows %}
+        <tr>
+          <td class="px-4 py-2 font-medium text-slate-900">{{ member.full_name }}</td>
+          <td class="px-4 py-2 font-mono text-xs">{{ member.username }}</td>
+          <td class="px-4 py-2 text-slate-600">{{ member.role.value }}</td>
+          <td class="px-4 py-2 text-right">
+            <form method="post" action="/companies/{{ company.id }}/members/remove" class="inline" onsubmit="return confirm('Remove this user from the company? They will no longer see it in their list.');">
+              <input type="hidden" name="link_id" value="{{ uc_link.id }}"/>
+              <button type="submit" class="text-xs text-red-600 hover:underline">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">No members (unexpected).</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if company_candidate_users %}
+  <form method="post" action="/companies/{{ company.id }}/members/add" class="flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-[12rem]">
+      <label class="text-xs font-medium text-slate-600">Add user</label>
+      <select name="member_user_id" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">
+        <option value="">Choose account…</option>
+        {% for u in company_candidate_users %}
+        <option value="{{ u.id }}">{{ u.full_name }} ({{ u.username }}) — {{ u.role.value }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="bg-slate-800 text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-slate-700">Add to company</button>
+  </form>
+  <p class="text-xs text-slate-500 mt-2">Each user can belong to at most <strong>{{ max_companies_per_user }}</strong> companies (server limit).</p>
+  {% else %}
+  <p class="text-sm text-slate-500">Every active user is already linked to this company. Create more accounts (or reactivate users) to add people.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="max-w-3xl space-y-6 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Logo (for PDFs)</label>
+      <div class="mt-1 flex flex-wrap items-center gap-3">
+        <input name="logo" type="file" accept=".png,.jpg,.jpeg,.webp" class="text-sm"/>
+        {% if company.logo_path %}
+          <a class="text-xs text-brand-700 hover:underline" href="/companies/{{ company.id }}/logo" target="_blank">View current logo</a>
+        {% else %}
+          <span class="text-xs text-slate-500">No logo uploaded.</span>
+        {% endif %}
+      </div>
+      <p class="text-xs text-slate-500 mt-1">Recommended: PNG, transparent background, ~300px height.</p>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Company name (trading)</label>
+      <input name="name" value="{{ company.name }}" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Legal name</label>
+      <input name="legal_name" value="{{ company.legal_name or '' }}" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Address</label>
+      <textarea name="address" rows="3" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm">{{ company.address or '' }}</textarea>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Tax / VAT ID</label>
+      <input name="tax_id" value="{{ company.tax_id or '' }}" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Company registration no.</label>
+      <input name="registration_no" value="{{ company.registration_no or '' }}" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Phone</label>
+      <input name="phone" value="{{ company.phone or '' }}" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Email</label>
+      <input name="email" type="email" value="{{ company.email or '' }}" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Website</label>
+      <input name="website" value="{{ company.website or '' }}" placeholder="https://..." class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Document number prefix</label>
+      <input name="doc_prefix" value="{{ company.doc_prefix }}" required maxlength="10" pattern="[A-Za-z0-9]+" title="Letters and numbers only, max 10"
+             class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono uppercase"/>
+      <p class="text-xs text-slate-500 mt-1">Shown on quotations, POs, invoices (e.g. MFTCH → QTN-MFTCH-2603-0001).</p>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Default currency (new projects)</label>
+      <select name="default_currency" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono">
+        {% for c in currencies %}
+        <option value="{{ c }}" {% if c == company.default_currency %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+  <button type="submit" class="bg-brand-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg hover:bg-brand-600">Save settings</button>
+</form>
+{% endblock %}

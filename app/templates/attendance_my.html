@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}My attendance · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10 col-xl-8">
+    <div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">
+      <div>
+        <h1 class="h3 fw-bold text-body mb-1">My attendance</h1>
+        <p class="text-body-secondary small mb-0">Clock in/out for the active company. Mobile GPS clock uses the same records via the API.</p>
+      </div>
+      {% if user.role.value in ['admin', 'gm', 'hr', 'project_manager'] %}
+      <a class="btn btn-outline-primary btn-sm" href="/hr/attendance"><i class="fas fa-users me-1"></i>Team view</a>
+      {% endif %}
+    </div>
+
+    {% if clock_ok == 'clock_in' %}
+    <div class="alert alert-success border-0 shadow-sm d-flex align-items-center gap-3 mb-4" role="status">
+      <span class="rounded-circle bg-success bg-opacity-25 text-success d-flex align-items-center justify-content-center flex-shrink-0" style="width:3rem;height:3rem;"><i class="fas fa-check fs-4"></i></span>
+      <div>
+        <div class="fw-semibold">You have clocked in</div>
+        <div class="small text-body-secondary mb-0">Your time was saved. You can close this page.</div>
+      </div>
+    </div>
+    {% elif clock_ok == 'clock_out' %}
+    <div class="alert alert-primary border-0 shadow-sm d-flex align-items-center gap-3 mb-4" role="status">
+      <span class="rounded-circle bg-primary bg-opacity-25 text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width:3rem;height:3rem;"><i class="fas fa-check fs-4"></i></span>
+      <div>
+        <div class="fw-semibold">You have clocked out</div>
+        <div class="small text-body-secondary mb-0">Your time was saved. Have a good rest.</div>
+      </div>
+    </div>
+    {% elif clock_err %}
+    <div class="alert alert-warning border-0 mb-4">Something went wrong. Please try again or use the mobile app.</div>
+    {% endif %}
+
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-4">
+        <div class="text-uppercase small text-body-secondary fw-semibold mb-3">Today · {{ today_local.isoformat() }} · {{ display_timezone }}</div>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="rounded-3 border bg-body-secondary bg-opacity-25 p-3 h-100">
+              <div class="small text-body-secondary">First clock-in</div>
+              <div class="fs-5 fw-semibold font-monospace">{% if today_first_in %}{{ today_first_in | localtime }}{% else %}—{% endif %}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="rounded-3 border bg-body-secondary bg-opacity-25 p-3 h-100">
+              <div class="small text-body-secondary">Last clock-out</div>
+              <div class="fs-5 fw-semibold font-monospace">{% if today_last_out %}{{ today_last_out | localtime }}{% else %}—{% endif %}</div>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <form method="post" action="/attendance/clock">
+            <input type="hidden" name="event_type" value="clock_in"/>
+            <button type="submit" class="btn btn-success btn-lg px-4"><i class="fas fa-sign-in-alt me-2"></i>Clock in</button>
+          </form>
+          <form method="post" action="/attendance/clock">
+            <input type="hidden" name="event_type" value="clock_out"/>
+            <button type="submit" class="btn btn-outline-primary btn-lg px-4"><i class="fas fa-sign-out-alt me-2"></i>Clock out</button>
+          </form>
+        </div>
+        <p class="small text-body-secondary mt-3 mb-0">Tip: after you tap a button, wait for the green confirmation above — that means the server stored your punch.</p>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-white py-3 fw-semibold border-bottom-0">Recent punches</div>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light"><tr><th class="px-3">When ({{ display_timezone }})</th><th class="px-3">Type</th></tr></thead>
+          <tbody>
+            {% for e in recent_events %}
+            <tr>
+              <td class="px-3 font-monospace small">{{ (e.device_time or e.event_at) | localtime }}</td>
+              <td class="px-3"><span class="badge rounded-pill {% if e.event_type.value == 'clock_in' %}text-bg-success{% else %}text-bg-primary{% endif %}">{{ e.event_type.value|replace('_',' ') }}</span></td>
+            </tr>
+            {% else %}
+            <tr><td colspan="2" class="px-3 py-4 text-center text-body-secondary small">No punches yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

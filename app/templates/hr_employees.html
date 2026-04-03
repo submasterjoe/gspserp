@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}HR · Employees · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold text-slate-900 mb-2">HR · Employees</h1>
+<p class="text-sm text-slate-600 mb-6">HR-only fields: wages, EPF, offer letters.</p>
+
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-x-auto">
+  <table class="min-w-full text-sm">
+    <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
+      <tr>
+        <th class="px-4 py-3">Name</th>
+        <th class="px-4 py-3">Username</th>
+        <th class="px-4 py-3">Staff ID</th>
+        <th class="px-4 py-3">Role</th>
+        <th class="px-4 py-3">EPF</th>
+        <th class="px-4 py-3 text-right">Wage (monthly)</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-slate-100">
+      {% for e in employees %}
+      {% set p = profiles.get(e.id) %}
+      <tr>
+        <td class="px-4 py-3">{{ e.full_name }}</td>
+        <td class="px-4 py-3 font-mono text-xs">{{ e.username }}</td>
+        <td class="px-4 py-3 font-mono text-xs">GS{{ '%04d'|format(e.id) }}</td>
+        <td class="px-4 py-3"><span class="text-xs bg-slate-100 px-2 py-0.5 rounded">{{ e.role.value }}</span></td>
+        <td class="px-4 py-3 font-mono text-xs">{% if p and p.epf_no %}{{ p.epf_no }}{% else %}—{% endif %}</td>
+        <td class="px-4 py-3 text-right tabular-nums">{% if p and p.wage_monthly is not none %}{{ p.wage_monthly|amount }}{% else %}—{% endif %}</td>
+        <td class="px-4 py-3 text-right"><a class="text-brand-700 hover:underline" href="/hr/employees/{{ e.id }}">Open</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="mt-6 flex flex-wrap gap-2">
+  <a href="/hr/attendance" class="text-sm border border-slate-300 bg-white px-4 py-2 rounded-lg">Team attendance</a>
+  <a href="/hr/assets" class="text-sm border border-slate-300 bg-white px-4 py-2 rounded-lg">Assets</a>
+  <a href="/hr/leave" class="text-sm border border-slate-300 bg-white px-4 py-2 rounded-lg">Leave approvals</a>
+</div>
+{% endblock %}
+

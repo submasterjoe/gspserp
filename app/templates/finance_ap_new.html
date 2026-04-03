@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}New supplier invoice · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Register supplier invoice</h1>
+<form method="post" class="max-w-2xl space-y-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm text-sm">
+  <div class="grid md:grid-cols-2 gap-4">
+    <div>
+      <label class="text-xs font-medium text-slate-600">Supplier invoice / reference no.</label>
+      <input name="supplier_reference" class="mt-1 w-full border rounded-lg px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Invoice date *</label>
+      <input name="invoice_date" type="date" required class="mt-1 w-full border rounded-lg px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Due date</label>
+      <input name="due_date" type="date" class="mt-1 w-full border rounded-lg px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Amount *</label>
+      <input name="amount" type="number" step="0.01" required class="mt-1 w-full border rounded-lg px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Tax %</label>
+      <input name="tax_percent" type="number" step="0.01" value="0" class="mt-1 w-full border rounded-lg px-3 py-2"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Currency</label>
+      <input name="currency" value="USD" maxlength="8" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono uppercase"/>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Project (optional)</label>
+      <select name="project_id" class="mt-1 w-full border rounded-lg px-3 py-2">
+        <option value="">—</option>
+        {% for p in projects %}
+        <option value="{{ p.id }}">{{ p.code }} — {{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Vendor (optional)</label>
+      <select name="vendor_id" class="mt-1 w-full border rounded-lg px-3 py-2">
+        <option value="">—</option>
+        {% for v in vendors %}
+        <option value="{{ v.id }}">{{ v.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Purchase order (optional)</label>
+      <select name="purchase_order_id" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono text-xs">
+        <option value="">—</option>
+        {% for po in purchase_orders %}
+        <option value="{{ po.id }}">{{ po.number }} — {{ po.subcon_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="md:col-span-2">
+      <label class="text-xs font-medium text-slate-600">Notes</label>
+      <textarea name="notes" rows="2" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea>
+    </div>
+  </div>
+  <button type="submit" class="bg-brand-700 text-white font-medium px-4 py-2 rounded-lg">Save</button>
+  <a href="/finance/ap" class="text-sm text-slate-600 hover:underline ml-4">Cancel</a>
+</form>
+{% endblock %}

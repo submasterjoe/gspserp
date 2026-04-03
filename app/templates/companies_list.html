@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Companies · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold">Your companies</h1>
+    <p class="text-sm text-slate-600 mt-1">Each company has its own profile and document prefix. Open <strong>Settings</strong> to edit details.</p>
+  </div>
+  {% if can_create_company %}
+  <a href="/companies/new" class="inline-flex items-center justify-center gap-2 text-sm bg-brand-700 text-white font-medium px-4 py-2.5 rounded-lg hover:bg-brand-600 shadow-sm shrink-0">
+    <i class="fas fa-plus-circle" aria-hidden="true"></i> Add company
+  </a>
+  {% endif %}
+</div>
+
+{% if company_created %}
+<p class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 mb-6">Company created. Add teammates under <strong>Company settings → Who can see this company</strong> so they can select it. Default leave types (AL, MC, UL) were added.</p>
+{% endif %}
+{% if list_error %}
+<p class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-6">{{ list_error }}</p>
+{% endif %}
+
+<div class="bg-white rounded-xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+  {% for uc in companies %}
+  <div class="px-5 py-4 flex flex-wrap items-center justify-between gap-3">
+    <div>
+      <p class="font-medium text-slate-900">{{ uc.company.name }}</p>
+      <p class="text-xs text-slate-500 mt-0.5">Prefix: <span class="font-mono">{{ uc.company.doc_prefix }}</span>
+        {% if uc.company.tax_id %}· Tax ID: {{ uc.company.tax_id }}{% endif %}</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <form action="/switch-company" method="post" class="inline">
+        <input type="hidden" name="company_id" value="{{ uc.company_id }}"/>
+        <button type="submit" class="text-xs border border-slate-300 bg-white px-3 py-1.5 rounded-lg hover:bg-slate-50">Use on dashboard</button>
+      </form>
+      <a href="/companies/{{ uc.company_id }}/settings" class="text-sm bg-brand-700 text-white px-4 py-2 rounded-lg">Settings</a>
+    </div>
+  </div>
+  {% else %}
+  <div class="px-5 py-10 text-center text-slate-500">
+    <p class="mb-3">No companies linked to your account yet.</p>
+    {% if can_create_company %}
+    <a href="/companies/new" class="inline-flex items-center justify-center gap-2 text-sm bg-brand-700 text-white font-medium px-5 py-2.5 rounded-lg hover:bg-brand-600 shadow-sm">
+      <i class="fas fa-plus-circle" aria-hidden="true"></i> Add company
+    </a>
+    {% else %}
+    <p class="text-sm">Ask an <strong>admin</strong> or <strong>GM</strong> to create a company and add you to it.</p>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

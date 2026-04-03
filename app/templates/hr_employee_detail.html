@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}HR · {{ emp.full_name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="/hr/employees" class="text-sm text-brand-700 hover:underline">← Employees</a>
+  <h1 class="text-2xl font-bold text-slate-900 mt-2">{{ emp.full_name }}</h1>
+  <p class="text-sm text-slate-600 mt-1">{{ emp.username }} · {{ emp.role.value }}</p>
+</div>
+
+<div class="max-w-3xl bg-white border border-slate-200 rounded-xl p-6 shadow-sm text-sm">
+  <h2 class="font-semibold text-slate-900 mb-4">HR profile</h2>
+  <form method="post" action="/hr/employees/{{ emp.id }}/profile" enctype="multipart/form-data" class="space-y-4">
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <label class="text-xs font-medium text-slate-600">EPF no.</label>
+        <input name="epf_no" value="{% if profile %}{{ profile.epf_no or '' }}{% endif %}" class="mt-1 w-full border rounded-lg px-3 py-2"/>
+      </div>
+      <div>
+        <label class="text-xs font-medium text-slate-600">Monthly wage</label>
+        <input name="wage_monthly" type="number" step="0.01" value="{% if profile and profile.wage_monthly %}{{ profile.wage_monthly }}{% endif %}" class="mt-1 w-full border rounded-lg px-3 py-2"/>
+      </div>
+      <div class="md:col-span-2">
+        <label class="text-xs font-medium text-slate-600">Wage notes</label>
+        <textarea name="wage_notes" rows="2" class="mt-1 w-full border rounded-lg px-3 py-2">{% if profile %}{{ profile.wage_notes or '' }}{% endif %}</textarea>
+      </div>
+      <div class="md:col-span-2">
+        <label class="text-xs font-medium text-slate-600">Offer letter (upload PDF/image)</label>
+        <input type="file" name="offer_letter" accept=".pdf,.png,.jpg,.jpeg,.webp" class="mt-1 text-sm"/>
+        {% if profile and profile.offer_letter_path %}
+          <div class="text-xs text-slate-600 mt-2">
+            <a class="text-brand-700 hover:underline" href="/hr/employees/{{ emp.id }}/offer-letter" target="_blank">View current offer letter</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+    <button type="submit" class="bg-brand-700 text-white font-medium px-4 py-2 rounded-lg">Save</button>
+  </form>
+</div>
+{% endblock %}
+

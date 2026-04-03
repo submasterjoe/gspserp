@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Client receivables (AR) · {{ app_name }}{% endblock %}
+{% block content %}
+{% from "partials/ui.html" import badge, card %}
+
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Client receivables (AR)</h1>
+    <p class="text-sm text-slate-600 mt-1">Track invoice status, due dates, aging and payment notes.</p>
+  </div>
+</div>
+
+{% call card("Accounts receivable", "Finance can record paid date and remarks.") %}
+  <div class="overflow-x-auto -mx-5">
+    <div class="min-w-full px-5">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
+          <tr>
+            <th class="px-3 py-3">Invoice</th>
+            <th class="px-3 py-3">Project</th>
+            <th class="px-3 py-3 text-right">Total</th>
+            <th class="px-3 py-3">Issue</th>
+            <th class="px-3 py-3">Due</th>
+            <th class="px-3 py-3">Aging</th>
+            <th class="px-3 py-3">Status</th>
+            <th class="px-3 py-3">Payment</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for row in rows %}
+          {% set inv = row.inv %}
+          <tr class="align-top hover:bg-slate-50/80">
+            <td class="px-3 py-3 font-mono text-xs">{{ inv.number }}</td>
+            <td class="px-3 py-3">{% if inv.project %}{{ inv.project.code }}{% else %}—{% endif %}</td>
+            <td class="px-3 py-3 text-right tabular-nums">{{ row.total|amount }}</td>
+            <td class="px-3 py-3">{{ inv.issue_date }}</td>
+            <td class="px-3 py-3">{{ inv.due_date or '—' }}</td>
+            <td class="px-3 py-3 {% if 'overdue' in row.aging %}text-rose-700 font-semibold{% endif %}">{{ row.aging }}</td>
+            <td class="px-3 py-3">{{ badge(inv.pay_status.value, "green" if inv.pay_status.value == "paid" else ("amber" if inv.pay_status.value == "sent" else "slate")) }}</td>
+            <td class="px-3 py-3 max-w-xs">
+              {% if inv.paid_at %}<span class="text-xs">Paid {{ inv.paid_at }}</span><br/>{% endif %}
+              {% if inv.payment_remarks %}<span class="text-xs">{{ inv.payment_remarks }}</span>{% endif %}
+              {% if can_edit %}
+              <form method="post" action="/finance/ar/{{ inv.id }}/payment" class="mt-2 space-y-2 border-t border-slate-100 pt-2">
+                <select name="pay_status" class="w-full rounded-xl border border-slate-300 bg-white px-2 py-2 text-xs">
+                  <option value="draft" {% if inv.pay_status.value == 'draft' %}selected{% endif %}>Draft</option>
+                  <option value="sent" {% if inv.pay_status.value == 'sent' %}selected{% endif %}>Sent / unpaid</option>
+                  <option value="paid" {% if inv.pay_status.value == 'paid' %}selected{% endif %}>Paid</option>
+                </select>
+                <input name="paid_at" type="date"
+                       class="w-full rounded-xl border border-slate-300 bg-white px-2 py-2 text-xs"
+                       value="{% if inv.paid_at %}{{ inv.paid_at.isoformat() }}{% endif %}"/>
+                <input name="payment_remarks" placeholder="Remarks (ref no., bank, etc.)" value="{{ inv.payment_remarks or '' }}"
+                       class="w-full rounded-xl border border-slate-300 bg-white px-2 py-2 text-xs"/>
+                <button type="submit" class="text-xs inline-flex items-center justify-center rounded-xl bg-emerald-700 px-3 py-2 font-medium text-white hover:bg-emerald-600">
+                  Update
+                </button>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="8" class="px-3 py-10 text-center text-slate-500">No client invoices.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endcall %}
+{% endblock %}

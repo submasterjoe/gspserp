@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}New project · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">New project</h1>
+<form method="post" class="max-w-lg space-y-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <div>
+    <label class="text-xs font-medium text-slate-600">Name</label>
+    <input name="name" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Client</label>
+    <input name="client_name" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"/>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Currency</label>
+    <select name="currency" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono">
+      {% for c in currencies %}
+      <option value="{{ c }}" {% if c == (default_currency or 'USD') %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Notes</label>
+    <textarea name="notes" rows="3" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"></textarea>
+  </div>
+  <button type="submit" class="bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Create</button>
+</form>
+{% endblock %}

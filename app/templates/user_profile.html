@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Your profile · {{ app_name }}{% endblock %}
+{% block content %}
+<a href="/dashboard" class="text-sm text-brand-700 hover:underline">← Dashboard</a>
+<h1 class="text-2xl font-bold text-slate-900 mt-2 mb-2">Your profile</h1>
+<p class="text-sm text-slate-600 mb-6">Preferred currency is used as the default when you create a new project (you can still pick another). Figures on the dashboard stay in each project’s currency — there is no foreign-exchange conversion yet.</p>
+
+<div class="max-w-3xl bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6 text-sm">
+  <div class="font-semibold text-slate-900 mb-3">User details</div>
+  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+    <dt class="text-xs font-medium text-slate-500">Staff ID</dt>
+    <dd class="text-xs text-slate-900 font-mono">GS{{ '%04d'|format(user.id) }}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Username</dt>
+    <dd class="text-xs text-slate-900">{{ user.username }}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Full name</dt>
+    <dd class="text-xs text-slate-900">{{ user.full_name }}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Email</dt>
+    <dd class="text-xs text-slate-900">{{ user.email }}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Role</dt>
+    <dd class="text-xs text-slate-900">{{ user.role.value }}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Status</dt>
+    <dd class="text-xs text-slate-900">{% if user.is_active %}Active{% else %}Disabled{% endif %}</dd>
+
+    <dt class="text-xs font-medium text-slate-500">Created</dt>
+    <dd class="text-xs text-slate-900">{% if user.created_at %}{{ user.created_at }}{% else %}—{% endif %}</dd>
+  </dl>
+
+  <div class="mt-4">
+    <div class="text-xs font-semibold text-slate-900 mb-2">Companies</div>
+    <div class="text-xs text-slate-900">
+      {% if companies and companies|length > 0 %}
+        {% for c in companies %}
+          <span class="inline-flex items-center bg-slate-100 px-2 py-0.5 rounded text-xs mr-2 mb-2">{{ c.name }}</span>
+        {% endfor %}
+      {% else %}
+        <span class="text-slate-500">—</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if employee_profile %}
+  <div class="mt-4 pt-4 border-t border-slate-100">
+    <div class="text-xs font-semibold text-slate-900 mb-2">Employee profile (HR)</div>
+    <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2">
+      <dt class="text-xs font-medium text-slate-500">EPF</dt>
+      <dd class="text-xs text-slate-900 font-mono">{% if employee_profile.epf_no %}{{ employee_profile.epf_no }}{% else %}—{% endif %}</dd>
+
+      <dt class="text-xs font-medium text-slate-500">Wage (monthly)</dt>
+      <dd class="text-xs text-slate-900">{% if employee_profile.wage_monthly is not none %}{{ employee_profile.wage_monthly|amount }}{% else %}—{% endif %}</dd>
+
+      <dt class="text-xs font-medium text-slate-500">Wage notes</dt>
+      <dd class="text-xs text-slate-900">{% if employee_profile.wage_notes %}{{ employee_profile.wage_notes }}{% else %}—{% endif %}</dd>
+    </dl>
+  </div>
+  {% endif %}
+</div>
+
+{% if saved %}
+<p class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 mb-4">Preferred currency saved.</p>
+{% endif %}
+{% if pwd_saved %}
+<p class="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 mb-4">Password updated.</p>
+{% endif %}
+{% if pwd_error %}
+<p class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-4">{{ pwd_error }}</p>
+{% endif %}
+
+<div class="max-w-3xl bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6 text-sm">
+  <div class="font-semibold text-slate-900 mb-3">Security</div>
+  <form method="post" action="/settings/password" class="max-w-md space-y-4">
+    <div>
+      <label class="text-xs font-medium text-slate-600">Current password</label>
+      <input type="password" name="current_password" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" required autocomplete="current-password"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">New password</label>
+      <input type="password" name="new_password" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" required autocomplete="new-password"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Confirm new password</label>
+      <input type="password" name="confirm_password" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm" required autocomplete="new-password"/>
+    </div>
+    <button type="submit" class="bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Update password</button>
+  </form>
+</div>
+
+<form method="post" class="max-w-md space-y-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <div>
+    <label class="text-xs font-medium text-slate-600">Preferred currency</label>
+    <select name="preferred_currency" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono">
+      {% for c in currencies %}
+      <option value="{{ c }}" {% if user.preferred_currency == c %}selected{% endif %}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <p class="text-xs text-slate-500">Signed in as <strong>{{ user.username }}</strong> ({{ user.role.value }}).</p>
+  <button type="submit" class="bg-brand-700 text-white text-sm font-medium px-4 py-2 rounded-lg">Save</button>
+</form>
+{% endblock %}

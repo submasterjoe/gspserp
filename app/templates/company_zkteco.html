@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}ZKTeco · {{ company.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-4">
+  <a href="/companies/{{ company.id }}/settings" class="text-sm text-decoration-none">← Company settings</a>
+  <h1 class="h3 fw-bold text-body mt-2 mb-1">ZKTeco attendance</h1>
+  <p class="text-body-secondary small mb-0">
+    Register devices, map terminal employee codes to GSPS users, then point your bridge or middleware at the webhook below.
+    Punches create <strong>clock in / out</strong> events like the mobile app.
+  </p>
+</div>
+
+{% if saved %}
+<div class="alert alert-success py-2 small mb-3">Saved.</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger py-2 small mb-3">{{ error }}</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold py-3">
+    <i class="fas fa-link text-primary me-2"></i>Webhook URL
+  </div>
+<div class="card-body">
+    <p class="small text-body-secondary mb-2">
+      Configure your <strong>bridge / middleware</strong> to send <strong>POST</strong> requests with a JSON body to:
+      If your device is set to <strong>T&amp;A push</strong> (ADMS), it typically sends data to ZKTeco cloud/WDMS instead of directly calling this webhook, so you still need a translator (this can be a polling bridge every 30–60 seconds).
+    </p>
+    <div class="input-group input-group-sm mb-3">
+      <input type="text" class="form-control font-monospace small" id="zkWebhookUrl" readonly value="{{ webhook_url }}"/>
+      <button class="btn btn-outline-secondary" type="button" onclick="navigator.clipboard.writeText(document.getElementById('zkWebhookUrl').value)">Copy</button>
+    </div>
+    {% if zkteco_secret_configured %}
+    <p class="small text-success mb-2"><i class="fas fa-lock me-1"></i>Server requires header <code class="small">X-ZKTeco-Secret</code> (value is set in server <code class="small">.env</code> as <code class="small">ZKTECO_WEBHOOK_SECRET</code>).</p>
+    {% else %}
+    <p class="small text-warning mb-2"><i class="fas fa-unlock me-1"></i>No webhook secret is set — requests are accepted without a header. Set <code class="small">ZKTECO_WEBHOOK_SECRET</code> in <code class="small">.env</code> for production.</p>
+    {% endif %}
+    <p class="small text-body-secondary mb-2">If the URL shows <code class="small">localhost</code>, set <code class="small">PUBLIC_BASE_URL=https://your-domain.com</code> in <code class="small">.env</code> so the real public address is shown here.</p>
+    <p class="small fw-semibold mb-1">Example JSON body:</p>
+    <pre class="bg-body-secondary bg-opacity-50 rounded p-3 small mb-0 overflow-auto" style="font-size:0.75rem;">{
+  "terminal_sn": "DEVICE_SERIAL_FROM_ZK",
+  "emp_code": "123",
+  "event_type": "clock_in",
+  "punch_time": "2026-04-03T10:30:00+00:00"
+}</pre>
+    <p class="small text-body-secondary mt-2 mb-0"><code class="small">event_type</code> can be <code class="small">clock_in</code> / <code class="small">clock_out</code> (or common aliases like <code class="small">in</code> / <code class="small">out</code>). <code class="small">punch_time</code> can be ISO string or Unix timestamp.</p>
+    <p class="small text-body-secondary mt-2 mb-0">ZKTeco ADMS bridge payloads are also accepted: <code class="small">deviceId</code> → terminal, <code class="small">userId</code> → emp code, <code class="small">timestamp</code> → time, <code class="small">status</code> e.g. <code class="small">check-in</code> / <code class="small">check-out</code>.</p>
+  </div>
+</div>
+
+{% if can_zk_terminals %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold py-3">
+    <i class="fas fa-fingerprint text-primary me-2"></i>Terminals <span class="text-body-secondary fw-normal small">(Admin / GM)</span>
+  </div>
+  <div class="card-body">
+    <p class="small text-body-secondary">Serial number must match what your device or bridge sends as <code class="small">terminal_sn</code>.</p>
+    <form method="post" action="/companies/{{ company.id }}/integrations/zkteco/terminal" class="row g-2 align-items-end mb-4">
+      <div class="col-md-4">
+        <label class="form-label small mb-0">Terminal serial (SN)</label>
+        <input name="terminal_sn" class="form-control form-control-sm" required placeholder="e.g. CJTE12345678"/>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small mb-0">Alias (optional)</label>
+        <input name="terminal_alias" class="form-control form-control-sm" placeholder="Main office"/>
+      </div>
+      <div class="col-md-auto">
+        <button type="submit" class="btn btn-sm btn-primary">Register or update</button>
+      </div>
+    </form>
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead class="table-light"><tr><th>Serial</th><th>Alias</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          {% for t in terminals %}
+          <tr>
+            <td class="font-monospace small">{{ t.terminal_sn }}</td>
+            <td class="small">{{ t.terminal_alias or '—' }}</td>
+            <td class="small">{% if t.is_active %}<span class="badge text-bg-success">Active</span>{% else %}<span class="badge text-bg-secondary">Off</span>{% endif %}</td>
+            <td class="text-end">
+              <form method="post" action="/companies/{{ company.id }}/integrations/zkteco/terminal/toggle" class="d-inline">
+                <input type="hidden" name="terminal_id" value="{{ t.id }}"/>
+                <input type="hidden" name="active" value="{{ 0 if t.is_active else 1 }}"/>
+                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                  {% if t.is_active %}Disable{% else %}Enable{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-body-secondary small py-4">No terminals yet. Add the device serial first.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if can_zk_maps %}
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold py-3">
+    <i class="fas fa-user-tag text-primary me-2"></i>Employee code → user <span class="text-body-secondary fw-normal small">(Admin / GM / HR)</span>
+  </div>
+  <div class="card-body">
+    <p class="small text-body-secondary">
+      Map the <strong>emp_code</strong> from the device (PIN / user ID on the terminal) to a GSPS user for this company.
+      Without a row here, the webhook falls back to matching <code class="small">username</code> to <code class="small">emp_code</code>, and also supports <code class="small">emp_code</code> == GSPS <code class="small">User.id</code> (Staff ID).
+    </p>
+    <form method="post" action="/companies/{{ company.id }}/integrations/zkteco/map" class="row g-2 align-items-end mb-4">
+      <div class="col-md-3">
+        <label class="form-label small mb-0">Terminal SN</label>
+        <select name="terminal_sn" class="form-select form-select-sm" required>
+          <option value="">— choose —</option>
+          {% for t in terminals %}
+          <option value="{{ t.terminal_sn }}">{{ t.terminal_sn }}{% if t.terminal_alias %} — {{ t.terminal_alias }}{% endif %}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label small mb-0">Device emp code</label>
+        <input name="emp_code" class="form-control form-control-sm" required placeholder="e.g. 3"/>
+      </div>
+      <div class="col-md-4">
+        <label class="form-label small mb-0">GSPS user</label>
+        <select name="user_id" class="form-select form-select-sm" required>
+          <option value="">— choose —</option>
+          {% for u in company_users %}
+          <option value="{{ u.id }}">{{ u.full_name }} ({{ u.username }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-auto">
+        <button type="submit" class="btn btn-sm btn-primary">Save mapping</button>
+      </div>
+    </form>
+    {% if not terminals %}
+    <p class="small text-warning">Add a terminal above before creating mappings.</p>
+    {% endif %}
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead class="table-light"><tr><th>Terminal</th><th>Emp code</th><th>User</th><th></th></tr></thead>
+        <tbody>
+          {% for m in zk_maps %}
+          <tr>
+            <td class="font-monospace small">{{ m.terminal_sn }}</td>
+            <td class="font-monospace small">{{ m.emp_code }}</td>
+            <td class="small">{{ m.user.full_name }} <span class="text-body-secondary">({{ m.user.username }})</span></td>
+            <td class="text-end">
+              <form method="post" action="/companies/{{ company.id }}/integrations/zkteco/map/delete" class="d-inline" onsubmit="return confirm('Remove this mapping?');">
+                <input type="hidden" name="map_id" value="{{ m.id }}"/>
+                <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="text-body-secondary small py-4">No mappings yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="card border-0 shadow-sm mb-4">
+  <div class="card-header bg-white fw-semibold py-3">
+    <i class="fas fa-history text-primary me-2"></i>Recent punches (this company)
+  </div>
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table table-sm align-middle mb-0">
+        <thead class="table-light">
+          <tr><th>Received ({{ display_timezone }})</th><th>Terminal</th><th>Code</th><th>Event</th><th>Punch time ({{ display_timezone }})</th></tr>
+        </thead>
+        <tbody>
+          {% for p in punches %}
+          <tr>
+            <td class="small text-body-secondary font-monospace">{{ p.received_at | localtime }}</td>
+            <td class="small font-monospace">{{ p.terminal_sn }}</td>
+            <td class="small font-monospace">{{ p.emp_code }}</td>
+            <td class="small"><span class="badge text-bg-light border">{{ p.event_type.value }}</span></td>
+            <td class="small font-monospace">{{ p.punch_time | localtime }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-body-secondary small py-4 px-3">No punches recorded yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<p class="small text-body-secondary">
+  API (JWT): <code class="small">GET /api/v1/zkteco/terminals?company_id={{ company.id }}</code>,
+  <code class="small">GET /api/v1/zkteco/employee-maps?company_id={{ company.id }}</code>.
+  See <a href="/docs" target="_blank" rel="noopener">OpenAPI docs</a>.
+</p>
+{% endblock %}

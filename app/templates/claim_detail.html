@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Claim · {{ app_name }}{% endblock %}
+{% block content %}
+<a href="/claims" class="text-sm text-brand-700 hover:underline">← Claims</a>
+<div class="mt-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm max-w-2xl">
+  <h1 class="text-xl font-bold">{{ claim.title }}</h1>
+  <p class="text-sm text-slate-600 mt-2">{{ claim.amount|amount }} · {{ claim.category.value }} · {{ claim.status.value }}</p>
+  {% if claim.receipt_path %}
+  <div class="mt-3 text-sm">
+    <a class="text-brand-700 hover:underline" href="/claims/{{ claim.id }}/receipt" target="_blank">View receipt</a>
+    {% if claim.receipt_quality %}
+      <span class="text-xs text-slate-500 ml-2">Quality: <span class="font-mono">{{ claim.receipt_quality }}</span>{% if claim.receipt_quality_score is not none %} ({{ claim.receipt_quality_score|amount }}){% endif %}</span>
+    {% endif %}
+    {% if claim.receipt_quality_notes %}<div class="text-xs text-slate-500 mt-1">{{ claim.receipt_quality_notes }}</div>{% endif %}
+  </div>
+  {% else %}
+  <p class="text-xs text-slate-500 mt-3">No receipt attached.</p>
+  {% endif %}
+  {% if claim.description %}<p class="text-sm mt-4">{{ claim.description }}</p>{% endif %}
+  <ul class="text-xs text-slate-500 mt-4 space-y-1">
+    <li>PM: {{ claim.pm_approved_at or 'pending' }}</li>
+    <li>GM: {{ claim.gm_approved_at or 'pending' }}</li>
+    <li>Finance: {{ claim.finance_approved_at or 'pending' }}</li>
+  </ul>
+  {% if claim.rejection_reason %}
+  <p class="text-sm text-red-600 mt-4">Rejected: {{ claim.rejection_reason }}</p>
+  {% endif %}
+
+  <div class="mt-6 flex flex-wrap gap-2">
+    {% if claim.status.value == 'draft' %}
+    <form method="post" action="/claims/{{ claim.id }}/submit"><button type="submit" class="text-sm bg-brand-700 text-white px-3 py-1.5 rounded-lg">Submit for approval</button></form>
+    {% endif %}
+    {% if claim.status.value == 'pending_pm' and user.role.value in ('project_manager', 'admin') %}
+    <form method="post" action="/claims/{{ claim.id }}/approve-pm"><button type="submit" class="text-sm bg-emerald-600 text-white px-3 py-1.5 rounded-lg">Approve (PM)</button></form>
+    <form method="post" action="/claims/{{ claim.id }}/reject" class="flex gap-1 items-center"><input name="reason" placeholder="Reason" class="border rounded px-2 py-1 text-xs"/><button type="submit" class="text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg">Reject</button></form>
+    {% endif %}
+    {% if claim.status.value == 'pending_gm' and user.role.value in ('gm', 'admin') %}
+    <form method="post" action="/claims/{{ claim.id }}/approve-gm"><button type="submit" class="text-sm bg-emerald-600 text-white px-3 py-1.5 rounded-lg">Approve (GM)</button></form>
+    <form method="post" action="/claims/{{ claim.id }}/reject" class="flex gap-1 items-center"><input name="reason" placeholder="Reason" class="border rounded px-2 py-1 text-xs"/><button type="submit" class="text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg">Reject</button></form>
+    {% endif %}
+    {% if claim.status.value == 'pending_finance' and user.role.value in ('finance', 'admin') %}
+    <form method="post" action="/claims/{{ claim.id }}/approve-finance"><button type="submit" class="text-sm bg-emerald-600 text-white px-3 py-1.5 rounded-lg">Approve (Finance)</button></form>
+    <form method="post" action="/claims/{{ claim.id }}/reject" class="flex gap-1 items-center"><input name="reason" placeholder="Reason" class="border rounded px-2 py-1 text-xs"/><button type="submit" class="text-sm bg-red-600 text-white px-3 py-1.5 rounded-lg">Reject</button></form>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

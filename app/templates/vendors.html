@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Vendors & subcontractors · {{ app_name }}{% endblock %}
+{% block content %}
+{% from "partials/ui.html" import btn, card, field %}
+
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Vendors & subcontractors</h1>
+    <p class="text-sm text-slate-600 mt-1">
+      Registration is optional. Registered vendors appear in PO dropdowns for consistent data.
+    </p>
+  </div>
+</div>
+
+<div class="grid lg:grid-cols-2 gap-6">
+  {% call card("Registered vendors", "This company only.") %}
+    <ul class="divide-y divide-slate-100 max-h-[28rem] overflow-y-auto text-sm">
+      {% for v in vendors %}
+      <li class="py-3">
+        <p class="font-medium text-slate-900">{{ v.name }}</p>
+        {% if v.legal_name %}<p class="text-xs text-slate-500 mt-0.5">{{ v.legal_name }}</p>{% endif %}
+        {% if v.phone or v.email %}
+          <p class="text-xs text-slate-600 mt-1">{{ v.phone or '' }}{% if v.phone and v.email %} · {% endif %}{{ v.email or '' }}</p>
+        {% endif %}
+      </li>
+      {% else %}
+      <li class="py-8 text-center text-slate-500">No vendors yet.</li>
+      {% endfor %}
+    </ul>
+  {% endcall %}
+
+  {% call card("Add vendor", "Use a trading name for easier searching.") %}
+    <form method="post" action="/vendors" class="space-y-4 text-sm">
+      {{ field("Name / trading name", "name", required=True, placeholder="Example: ABC Supplies") }}
+      {{ field("Legal name", "legal_name", placeholder="Optional") }}
+      {{ field("Contact person", "contact_person", placeholder="Optional") }}
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {{ field("Phone", "phone", placeholder="Optional") }}
+        {{ field("Email", "email", type="email", placeholder="Optional") }}
+      </div>
+      <div>
+        <label class="block text-xs font-medium text-slate-600 mb-1" for="address">Address</label>
+        <textarea id="address" name="address" rows="2"
+                  class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"></textarea>
+      </div>
+      {{ field("Tax ID", "tax_id", placeholder="Optional") }}
+      <div class="pt-1">
+        <button type="submit"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-brand-600 shadow-sm">
+          Add vendor
+        </button>
+      </div>
+    </form>
+  {% endcall %}
+</div>
+{% endblock %}

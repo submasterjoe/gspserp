@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Site · {{ site.name }} · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6 flex flex-wrap items-end justify-between gap-3">
+  <div>
+    <a href="/sites" class="text-sm text-brand-700 hover:underline">← Sites</a>
+    <h1 class="text-2xl font-bold text-slate-900 mt-2">{{ site.name }}</h1>
+    <p class="text-sm text-slate-600 mt-1">
+      {% if site.project %}<span class="font-mono">{{ site.project.code }}</span> — {{ site.project.name }}{% endif %}
+      · <span class="font-mono">{{ site.status.value }}</span>
+    </p>
+  </div>
+  {% if can_edit %}
+  <div class="flex items-center gap-2">
+    <a href="/sites/{{ site.id }}/edit" class="text-sm border border-slate-300 bg-white px-4 py-2 rounded-lg">Edit</a>
+    <a href="/dashboard/map" class="text-sm border border-slate-300 bg-white px-4 py-2 rounded-lg">Map</a>
+  </div>
+  {% endif %}
+</div>
+
+<div class="grid lg:grid-cols-2 gap-6">
+  <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm text-sm">
+    <h2 class="font-semibold text-slate-900 mb-3">Details</h2>
+    <dl class="grid grid-cols-3 gap-x-3 gap-y-2">
+      <dt class="text-slate-500">Address</dt><dd class="col-span-2">{{ site.address or '—' }}</dd>
+      <dt class="text-slate-500">Latitude</dt><dd class="col-span-2 font-mono">{% if site.lat is not none %}{{ site.lat|amount }}{% else %}—{% endif %}</dd>
+      <dt class="text-slate-500">Longitude</dt><dd class="col-span-2 font-mono">{% if site.lng is not none %}{{ site.lng|amount }}{% else %}—{% endif %}</dd>
+      <dt class="text-slate-500">Notes</dt><dd class="col-span-2">{{ site.notes or '—' }}</dd>
+    </dl>
+  </div>
+
+  {% if can_edit %}
+  <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm text-sm">
+    <h2 class="font-semibold text-slate-900 mb-3">Quick status</h2>
+    <div class="flex flex-wrap gap-2">
+      <form method="post" action="/sites/{{ site.id }}/status">
+        <input type="hidden" name="status" value="in_progress"/>
+        <button class="px-3 py-2 rounded-lg border border-blue-200 bg-blue-50">In progress</button>
+      </form>
+      <form method="post" action="/sites/{{ site.id }}/status">
+        <input type="hidden" name="status" value="delayed"/>
+        <button class="px-3 py-2 rounded-lg border border-red-200 bg-red-50">Delayed</button>
+      </form>
+      <form method="post" action="/sites/{{ site.id }}/status">
+        <input type="hidden" name="status" value="completed"/>
+        <button class="px-3 py-2 rounded-lg border border-emerald-200 bg-emerald-50">Completed</button>
+      </form>
+    </div>
+    <p class="text-xs text-slate-500 mt-3">Managers can switch status; map colors update automatically.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+

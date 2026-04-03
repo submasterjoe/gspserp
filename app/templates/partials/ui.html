@@ -1,0 +1,144 @@
+{# UI macros for consistent modern components #}
+
+{% macro icon(name, cls="") -%}
+  {%- if name == "home" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10.5 12 3l9 7.5V21a.75.75 0 0 1-.75.75H3.75A.75.75 0 0 1 3 21v-10.5Z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 21V12h6v9"/>
+  </svg>
+  {%- elif name == "building" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 21h18"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 21V4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h.01M12 7h.01M15 7h.01M9 10h.01M12 10h.01M15 10h.01M9 13h.01M12 13h.01M15 13h.01"/>
+  </svg>
+  {%- elif name == "briefcase" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v1"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 10a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-9Z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M3 13h18"/>
+  </svg>
+  {%- elif name == "doc" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M7 3h7l3 3v15a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v4a2 2 0 0 0 2 2h4"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h8M8 16h8"/>
+  </svg>
+  {%- elif name == "map" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19 3 21V5l6-2 6 2 6-2v16l-6 2-6-2Z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v16M15 5v16"/>
+  </svg>
+  {%- elif name == "finance" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9.5c0-1.2 1.8-2.2 4-2.2s4 1 4 2.2-1.8 2.2-4 2.2-4 1-4 2.2 1.8 2.2 4 2.2 4-1 4-2.2"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6.5v11A2.5 2.5 0 0 0 6.5 20h11A2.5 2.5 0 0 0 20 17.5v-11A2.5 2.5 0 0 0 17.5 4h-11A2.5 2.5 0 0 0 4 6.5Z"/>
+  </svg>
+  {%- elif name == "user" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20 21a8 8 0 1 0-16 0"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 13a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+  </svg>
+  {%- elif name == "logout" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M10 17H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15 7l5 5-5 5"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H10"/>
+  </svg>
+  {%- elif name == "calendar" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M8 3v3M16 3v3"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 5h12a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Z"/>
+  </svg>
+  {%- elif name == "claim" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h10M7 11h10M7 15h6"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 3h9l3 3v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"/>
+  </svg>
+  {%- elif name == "bell" -%}
+  <svg class="{{ cls }}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M15 17H9"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 17h12l-1.5-2.5A6.5 6.5 0 0 1 15.8 11V9a3.8 3.8 0 0 0-7.6 0v2c0 1.3-.3 2.6-.7 3.5L6 17Z"/>
+    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19a2 2 0 0 0 4 0"/>
+  </svg>
+  {%- else -%}
+  <span class="{{ cls }}"></span>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro btn(label, href=None, kind="primary", size="md", icon_name=None) -%}
+  {%- set base = "inline-flex items-center justify-center gap-2 rounded-xl font-medium transition focus:outline-none focus:ring-2 focus:ring-brand-600/40 disabled:opacity-50 disabled:cursor-not-allowed" -%}
+  {%- set sizes = {"sm":"text-xs px-3 py-2", "md":"text-sm px-4 py-2.5", "lg":"text-sm px-5 py-3"} -%}
+  {%- if kind == "primary" -%}
+    {%- set cls = base ~ " bg-brand-700 text-white hover:bg-brand-600 shadow-sm" -%}
+  {%- elif kind == "ghost" -%}
+    {%- set cls = base ~ " bg-transparent text-slate-700 hover:bg-slate-100 border border-slate-200" -%}
+  {%- elif kind == "soft" -%}
+    {%- set cls = base ~ " bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-100" -%}
+  {%- else -%}
+    {%- set cls = base ~ " bg-slate-900 text-white hover:bg-slate-800" -%}
+  {%- endif -%}
+  {%- if href -%}
+    <a href="{{ href }}" class="{{ cls }} {{ sizes[size] }}">
+      {%- if icon_name -%}{{ icon(icon_name, "h-4 w-4") }}{%- endif -%}
+      <span>{{ label }}</span>
+    </a>
+  {%- else -%}
+    <button class="{{ cls }} {{ sizes[size] }}" type="submit">
+      {%- if icon_name -%}{{ icon(icon_name, "h-4 w-4") }}{%- endif -%}
+      <span>{{ label }}</span>
+    </button>
+  {%- endif -%}
+{%- endmacro %}
+
+{% macro card(title=None, subtitle=None) -%}
+  <div class="card shadow-sm border-0 mb-4">
+    {%- if title -%}
+    <div class="card-header bg-white py-3 border-bottom">
+      <h2 class="h6 mb-0 fw-semibold text-body">{{ title }}</h2>
+      {%- if subtitle -%}<p class="small text-body-secondary mb-0 mt-1">{{ subtitle }}</p>{%- endif -%}
+    </div>
+    {%- endif -%}
+    <div class="card-body">
+      {{ caller() }}
+    </div>
+  </div>
+{%- endmacro %}
+
+{% macro badge(text, tone="slate") -%}
+  {%- set tones = {
+    "slate":"bg-slate-100 text-slate-700 border-slate-200",
+    "green":"bg-emerald-50 text-emerald-700 border-emerald-100",
+    "red":"bg-rose-50 text-rose-700 border-rose-100",
+    "amber":"bg-amber-50 text-amber-700 border-amber-100",
+    "blue":"bg-sky-50 text-sky-700 border-sky-100"
+  } -%}
+  <span class="inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-medium {{ tones.get(tone, tones['slate']) }}">{{ text }}</span>
+{%- endmacro %}
+
+{% macro field(label, name, value="", type="text", placeholder="", help_text=None, required=False) -%}
+  <div>
+    <label class="block text-xs font-medium text-slate-600 mb-1" for="{{ name }}">
+      {{ label }}{% if required %}<span class="text-rose-600">*</span>{% endif %}
+    </label>
+    <input id="{{ name }}" name="{{ name }}" type="{{ type }}" value="{{ value }}"
+           {% if required %}required{% endif %}
+           placeholder="{{ placeholder }}"
+           class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm shadow-sm focus:border-brand-600 focus:ring-2 focus:ring-brand-600/20"/>
+    {% if help_text %}<p class="text-xs text-slate-500 mt-1">{{ help_text }}</p>{% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro alert(text, tone="slate") -%}
+  {%- set tones = {
+    "slate":"bg-slate-50 text-slate-700 border-slate-200",
+    "red":"bg-rose-50 text-rose-800 border-rose-200",
+    "green":"bg-emerald-50 text-emerald-800 border-emerald-200",
+    "amber":"bg-amber-50 text-amber-800 border-amber-200",
+    "blue":"bg-sky-50 text-sky-800 border-sky-200"
+  } -%}
+  <div class="rounded-2xl border px-4 py-3 text-sm {{ tones.get(tone, tones['slate']) }}">{{ text }}</div>
+{%- endmacro %}
+

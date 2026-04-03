@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Sign in · {{ app_name }}{% endblock %}
+{% block content %}
+{% from "partials/ui.html" import alert %}
+
+<div class="row justify-content-center py-5">
+  <div class="col-md-6 col-lg-5 col-xl-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-4 p-md-5">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm"
+               style="width:3rem;height:3rem;background:linear-gradient(145deg,#6366f1,#4f46e5);">
+            <i class="fas fa-sign-in-alt"></i>
+          </div>
+          <div>
+            <h1 class="h4 fw-bold text-body mb-0">Sign in</h1>
+            <p class="small text-body-secondary mb-0">Use your Staff ID (GS0001) or username and the password.</p>
+          </div>
+        </div>
+
+        {% if error %}
+          {{ alert(error, "red") }}
+          <div class="mb-3"></div>
+        {% endif %}
+
+        <form method="post" action="/login">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="username">Staff ID (GS0001) or Username</label>
+            <input id="username" name="username" type="text" class="form-control" required autocomplete="username" placeholder="e.g. GS0001 or johndoe"/>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold" for="password">Password</label>
+            <div class="input-group">
+              <input id="password" name="password" type="password" class="form-control" autocomplete="current-password" required/>
+              <button type="button" class="btn btn-outline-secondary"
+                      onclick="const p=document.getElementById('password'); p.type = (p.type==='password') ? 'text' : 'password'; this.textContent = (p.type==='password') ? 'Show' : 'Hide';">
+                Show
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">Continue</button>
+        </form>
+
+        <div class="mt-4 p-3 rounded-3 bg-body-secondary bg-opacity-50 small text-body-secondary">
+          Demo: <code class="px-1 rounded bg-body">admin</code> /
+          <code class="px-1 rounded bg-body">admin123</code>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

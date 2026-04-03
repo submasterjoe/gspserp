@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Map dashboard · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="flex flex-wrap items-end justify-between gap-3 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Map dashboard</h1>
+    <p class="text-sm text-slate-600 mt-1">Sites with coordinates. Filter by status to highlight completed, in progress, or delayed.</p>
+  </div>
+  <div class="flex items-center gap-2 text-sm">
+    <a href="/sites" class="text-sm border border-slate-300 bg-white px-3 py-2 rounded-lg">Manage sites</a>
+  </div>
+</div>
+
+<div class="bg-white border border-slate-200 rounded-xl shadow-sm p-4 mb-4 flex flex-wrap gap-2 items-center text-sm">
+  <button class="px-3 py-1.5 rounded-lg border" onclick="setFilter('all')">All</button>
+  <button class="px-3 py-1.5 rounded-lg border border-emerald-300 bg-emerald-50" onclick="setFilter('completed')">Completed</button>
+  <button class="px-3 py-1.5 rounded-lg border border-blue-300 bg-blue-50" onclick="setFilter('in_progress')">In progress</button>
+  <button class="px-3 py-1.5 rounded-lg border border-red-300 bg-red-50" onclick="setFilter('delayed')">Delayed</button>
+  <span class="text-xs text-slate-500 ml-2">Colors: green=completed, blue=in progress, red=delayed</span>
+</div>
+
+<div id="map" class="bg-slate-100 border border-slate-200 rounded-xl shadow-sm" style="height: 70vh;"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script>
+  const SITES = {{ sites | tojson }};
+  const CAN_EDIT = {{ (can_edit or false) | tojson }};
+  const map = L.map('map');
+  const tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; OpenStreetMap'
+  }).addTo(map);
+
+  const colors = {
+    completed: '#16a34a',
+    in_progress: '#2563eb',
+    delayed: '#dc2626'
+  };
+
+  function markerFor(site) {
+    const c = colors[site.status] || '#475569';
+    const m = L.circleMarker([site.lat, site.lng], {
+      radius: 8,
+      color: c,
+      fillColor: c,
+      fillOpacity: 0.9,
+      weight: 2
+    });
+    const editLink = CAN_EDIT ? `<a href="/sites/${site.id}/edit" style="font-size:12px; color:#1e3a5f; text-decoration:underline; margin-left:10px;">Edit</a>` : '';
+    const html = `<div style="min-width:220px">
+      <div><b>${site.name}</b></div>
+      <div style="font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; color:#475569;">${site.project_code || ''}</div>
+      <div style="font-size:12px; color:#0f172a;">Status: ${site.status}</div>
+      <div style="margin-top:6px;">
+        <a href="/sites/${site.id}" style="font-size:12px; color:#1e3a5f; text-decoration:underline;">Open site</a>
+        ${editLink}
+      </div>
+    </div>`;
+    m.bindPopup(html);
+    return m;
+  }
+
+  const layer = L.layerGroup().addTo(map);
+  let activeFilter = 'all';
+
+  function render() {
+    layer.clearLayers();
+    const filtered = SITES.filter(s => activeFilter === 'all' ? true : s.status === activeFilter);
+    filtered.forEach(s => markerFor(s).addTo(layer));
+    if (filtered.length) {
+      const bounds = L.latLngBounds(filtered.map(s => [s.lat, s.lng]));
+      map.fitBounds(bounds.pad(0.2));
+    } else if (SITES.length) {
+      const bounds = L.latLngBounds(SITES.map(s => [s.lat, s.lng]));
+      map.fitBounds(bounds.pad(0.2));
+    } else {
+      map.setView([1.3521, 103.8198], 11); // default
+    }
+  }
+
+  function setFilter(f) {
+    activeFilter = f;
+    render();
+  }
+  window.setFilter = setFilter;
+  render();
+</script>
+{% endblock %}
+

@@ -1,0 +1,72 @@
+{# Fixed sidebar — same destinations as legacy Tailwind nav; Font Awesome icons. #}
+{% set path = request.url.path %}
+<div class="sidebar-inner d-flex flex-column h-100 pb-5">
+  <div class="flex-grow-1 overflow-y-auto py-2">
+    <div class="bw-nav-section text-uppercase small">Main</div>
+    <a class="bw-side-link {% if path == '/dashboard' %}active{% endif %}" href="/dashboard"><i class="fas fa-tachometer-alt fa-fw"></i><span>Dashboard</span></a>
+    <a class="bw-side-link {% if path.startswith('/projects') %}active{% endif %}" href="/projects"><i class="fas fa-briefcase fa-fw"></i><span>Projects</span></a>
+    <a class="bw-side-link {% if path.startswith('/schedule') or '/schedule' in path %}active{% endif %}" href="/schedule"><i class="fas fa-calendar-alt fa-fw"></i><span>My schedule</span></a>
+    <a class="bw-side-link {% if path.startswith('/attendance') and not path.startswith('/hr/attendance') %}active{% endif %}" href="/attendance"><i class="fas fa-user-clock fa-fw"></i><span>My attendance</span></a>
+    {% if user.role.value in ['admin', 'gm', 'hr', 'project_manager'] %}
+    <a class="bw-side-link {% if path.startswith('/hr/attendance') %}active{% endif %}" href="/hr/attendance"><i class="fas fa-clipboard-list fa-fw"></i><span>Team attendance</span></a>
+    {% endif %}
+    <a class="bw-side-link {% if path.startswith('/sites') %}active{% endif %}" href="/sites"><i class="fas fa-map-marked-alt fa-fw"></i><span>Sites</span></a>
+    {% if user.role.value in ['project_manager', 'gm', 'admin'] %}
+    <a class="bw-side-link {% if path.startswith('/dashboard/map') %}active{% endif %}" href="/dashboard/map"><i class="fas fa-map fa-fw"></i><span>Map view</span></a>
+    {% endif %}
+
+    <div class="bw-nav-section text-uppercase small">Documents</div>
+    <a class="bw-side-link {% if path.startswith('/quotations') %}active{% endif %}" href="/quotations"><i class="fas fa-file-invoice fa-fw"></i><span>Quotations</span></a>
+    <a class="bw-side-link {% if path.startswith('/sales-orders') %}active{% endif %}" href="/sales-orders"><i class="fas fa-file-contract fa-fw"></i><span>Sales orders</span></a>
+    <a class="bw-side-link {% if path.startswith('/purchase-orders') %}active{% endif %}" href="/purchase-orders"><i class="fas fa-shopping-cart fa-fw"></i><span>Purchase orders</span></a>
+    <a class="bw-side-link {% if path.startswith('/invoices') %}active{% endif %}" href="/invoices"><i class="fas fa-file-invoice-dollar fa-fw"></i><span>Invoices</span></a>
+
+    <div class="bw-nav-section text-uppercase small">People</div>
+    <a class="bw-side-link {% if path.startswith('/vendors') %}active{% endif %}" href="/vendors"><i class="fas fa-truck fa-fw"></i><span>Vendors</span></a>
+    <a class="bw-side-link {% if path.startswith('/claims') %}active{% endif %}" href="/claims"><i class="fas fa-receipt fa-fw"></i><span>Claims</span></a>
+    <a class="bw-side-link {% if path.startswith('/leave') %}active{% endif %}" href="/leave"><i class="fas fa-umbrella-beach fa-fw"></i><span>Leave</span></a>
+    <a class="bw-side-link {% if path.startswith('/assets') and not path.startswith('/hr/assets') %}active{% endif %}" href="/assets"><i class="fas fa-box-open fa-fw"></i><span>My assets</span></a>
+
+    {% if user.role.value in ['finance', 'admin', 'gm', 'project_manager'] %}
+    <div class="bw-nav-section text-uppercase small">Finance</div>
+    <a class="bw-side-link {% if path.startswith('/finance/ap') %}active{% endif %}" href="/finance/ap"><i class="fas fa-file-import fa-fw"></i><span>AP (Supplier)</span></a>
+    <a class="bw-side-link {% if path.startswith('/finance/ar') %}active{% endif %}" href="/finance/ar"><i class="fas fa-file-export fa-fw"></i><span>AR (Client)</span></a>
+    {% endif %}
+    {% if user.role.value in ['sales_manager', 'sales_exec', 'admin', 'gm', 'project_manager', 'finance'] %}
+    <a class="bw-side-link {% if path.startswith('/sales/performance') %}active{% endif %}" href="/sales/performance"><i class="fas fa-chart-line fa-fw"></i><span>Sales KPI</span></a>
+    {% endif %}
+    {% if user.role.value in ['hr', 'admin'] %}
+    <div class="bw-nav-section text-uppercase small">HR</div>
+    <a class="bw-side-link {% if path.startswith('/hr') %}active{% endif %}" href="/hr"><i class="fas fa-users fa-fw"></i><span>HR</span></a>
+    {% endif %}
+
+    <div class="bw-nav-section text-uppercase small">System</div>
+    {% if approvals %}
+    <a class="bw-side-link {% if path.startswith('/approvals') %}active{% endif %} justify-content-between" href="/approvals">
+      <span class="d-flex align-items-center gap-2"><i class="fas fa-clipboard-check fa-fw"></i><span>Approvals</span></span>
+      {% if approvals.counts.total %}<span class="badge bg-danger rounded-pill">{{ approvals.counts.total|amount(0) }}</span>{% endif %}
+    </a>
+    {% endif %}
+    <a class="bw-side-link {% if path.startswith('/companies') and '/integrations/' not in path and path != '/companies/new' %}active{% endif %}" href="/companies"><i class="fas fa-city fa-fw"></i><span>Companies</span></a>
+    {% if user.role.value in ['admin', 'gm'] %}
+    <a class="bw-side-link {% if path == '/companies/new' %}active{% endif %}" href="/companies/new"><i class="fas fa-plus-circle fa-fw"></i><span>Add company</span></a>
+    {% endif %}
+    {% if user.role.value in ['admin', 'gm', 'hr'] and active_company_id is defined and active_company_id %}
+    <a class="bw-side-link {% if '/integrations/zkteco' in path %}active{% endif %}" href="/companies/{{ active_company_id }}/integrations/zkteco"><i class="fas fa-fingerprint fa-fw"></i><span>ZKTeco</span></a>
+    {% endif %}
+    <a class="bw-side-link {% if path.startswith('/settings/profile') %}active{% endif %}" href="/settings/profile"><i class="fas fa-user fa-fw"></i><span>Your profile</span></a>
+    <form action="/logout" method="post" class="m-0">
+      <button type="submit" class="bw-side-link w-100 border-0 bg-transparent text-start">
+        <i class="fas fa-sign-out-alt fa-fw"></i><span>Log out</span>
+      </button>
+    </form>
+    <a class="bw-side-link" href="/docs" target="_blank" rel="noopener"><i class="fas fa-book fa-fw"></i><span>API docs</span></a>
+  </div>
+  <div class="bw-sidebar-footer border-top small text-muted mt-auto">
+    <div class="d-flex align-items-center gap-2">
+      <i class="fas fa-clock"></i>
+      <span id="bw-sidebar-time"></span>
+    </div>
+    <p class="mb-0 mt-2 small text-body-secondary">Same account on mobile (API docs →)</p>
+  </div>
+</div>

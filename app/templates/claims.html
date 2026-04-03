@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Internal claims · {{ app_name }}{% endblock %}
+{% block content %}
+{% from "partials/ui.html" import btn, badge, card %}
+
+<div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-6">
+  <div>
+    <h1 class="text-2xl font-bold text-slate-900">Internal claims</h1>
+    <p class="text-sm text-slate-600 mt-1">Workflow: Submit → PM → GM → Finance</p>
+  </div>
+  <div class="flex items-center gap-2">
+    {{ btn("New claim", href="/claims/new", kind="primary", icon_name="claim") }}
+  </div>
+</div>
+
+{% call card("Claims", "Upload receipts, track approvals, export PDF reports.") %}
+  <div class="overflow-x-auto -mx-5">
+    <div class="min-w-full px-5">
+      <table class="min-w-full text-sm">
+        <thead class="bg-slate-50 text-left text-xs uppercase text-slate-500">
+          <tr>
+            <th class="px-4 py-3">Title</th>
+            <th class="px-4 py-3">Project</th>
+            <th class="px-4 py-3 text-right">Amount</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {% for c in claims %}
+          <tr class="hover:bg-slate-50/80">
+            <td class="px-4 py-3 font-medium text-slate-900">{{ c.title }}</td>
+            <td class="px-4 py-3 font-mono text-xs text-slate-700">{{ c.project.code if c.project else '' }}</td>
+            <td class="px-4 py-3 text-right tabular-nums">{{ c.amount|amount }}</td>
+            <td class="px-4 py-3">
+              {% set st = c.status.value %}
+              {{ badge(st, "amber" if "pending" in st else ("green" if st in ["approved","paid"] else ("red" if st in ["rejected"] else "slate"))) }}
+            </td>
+            <td class="px-4 py-3 text-right">
+              <a href="/claims/{{ c.id }}" class="text-brand-700 hover:underline">View</a>
+              <a href="/claims/{{ c.id }}.pdf" class="text-slate-500 hover:underline ml-2">PDF</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">No claims.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endcall %}
+{% endblock %}

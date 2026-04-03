@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}New site · {{ app_name }}{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">New site</h1>
+<form method="post" class="max-w-2xl space-y-4 bg-white border border-slate-200 rounded-xl p-6 shadow-sm text-sm">
+  <div>
+    <label class="text-xs font-medium text-slate-600">Project</label>
+    <select name="project_id" required class="mt-1 w-full border rounded-lg px-3 py-2">
+      {% for p in projects %}
+      <option value="{{ p.id }}" {% if project_id and p.id == project_id %}selected{% endif %}>{{ p.code }} — {{ p.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Site name</label>
+    <input name="name" required class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="e.g. Site A"/>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Address</label>
+    <textarea name="address" rows="2" class="mt-1 w-full border rounded-lg px-3 py-2" placeholder="Optional"></textarea>
+  </div>
+  <div class="grid grid-cols-2 gap-3">
+    <div>
+      <label class="text-xs font-medium text-slate-600">Latitude</label>
+      <input name="lat" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono" placeholder="e.g. 1.352083"/>
+    </div>
+    <div>
+      <label class="text-xs font-medium text-slate-600">Longitude</label>
+      <input name="lng" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono" placeholder="e.g. 103.819836"/>
+    </div>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Status</label>
+    <select name="status" class="mt-1 w-full border rounded-lg px-3 py-2 font-mono">
+      {% for s in statuses %}
+      <option value="{{ s }}">{{ s }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label class="text-xs font-medium text-slate-600">Notes</label>
+    <textarea name="notes" rows="2" class="mt-1 w-full border rounded-lg px-3 py-2"></textarea>
+  </div>
+  <button type="submit" class="bg-brand-700 text-white font-medium px-4 py-2 rounded-lg">Create</button>
+</form>
+{% endblock %}
+

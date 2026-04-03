@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Import sites · {{ app_name }}{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="/sites" class="text-sm text-brand-700 hover:underline">← Sites</a>
+  <h1 class="text-2xl font-bold text-slate-900 mt-2">Import sites from Excel</h1>
+  <p class="text-sm text-slate-600 mt-1">Download the template, fill it, then upload. Rows with unknown project codes will be skipped.</p>
+</div>
+
+{% if error %}
+<p class="text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-4 py-2 mb-6">{{ error }}</p>
+{% endif %}
+
+<div class="max-w-2xl bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+  <div class="flex flex-wrap items-center gap-3 mb-4">
+    <a href="/sites/template.xlsx" class="text-sm bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-lg">Download sites template</a>
+    <a href="/dashboard/map" class="text-sm border border-slate-300 bg-white px-3 py-2 rounded-lg">Open map</a>
+  </div>
+  <form method="post" enctype="multipart/form-data" class="space-y-3">
+    <div>
+      <label class="text-xs font-medium text-slate-600">Upload XLSX</label>
+      <input type="file" name="upload_xlsx" accept=".xlsx" required class="mt-1 text-sm"/>
+    </div>
+    <button type="submit" class="bg-brand-700 text-white font-medium px-4 py-2 rounded-lg">Import</button>
+  </form>
+  <p class="text-xs text-slate-500 mt-4">Template sheet: <span class="font-mono">Sites</span>. Status values: <span class="font-mono">in_progress</span>, <span class="font-mono">delayed</span>, <span class="font-mono">completed</span>.</p>
+</div>
+{% endblock %}
+
