@@ -40,6 +40,7 @@ from app.models import (
     InvoicePayStatus,
     Project,
     ProjectCostLine,
+    ProjectStatus,
     PurchaseOrder,
     PurchaseOrderLine,
     Quotation,
@@ -2558,7 +2559,10 @@ async def quotation_new_post(
     user: User = Depends(get_current_user_web),
     db: AsyncSession = Depends(get_db),
     company_id: int = Depends(get_active_company_id),
-    project_id: int = Form(),
+    project_id: str = Form(""),
+    prospect_client_name: str = Form(""),
+    prospect_project_name: str = Form(""),
+    quote_currency: str = Form("USD"),
     tax_percent: str = Form("0"),
     valid_until: str = Form(""),
     notes: str = Form(""),
@@ -2579,23 +2583,45 @@ async def quotation_new_post(
         x_notes = data.notes
     if not lines:
         return RedirectResponse("/quotations/new", status_code=302)
-    p = await db.get(Project, project_id)
-    if not p or p.company_id != company_id:
-        return RedirectResponse("/quotations", status_code=302)
+
+    pid: int | None = int(project_id) if str(project_id).strip().isdigit() else None
+    p: Project | None = None
+    if pid is not None:
+        p = await db.get(Project, pid)
+        if not p or p.company_id != company_id:
+            return RedirectResponse("/quotations/new", status_code=302)
+    else:
+        if not (prospect_client_name or "").strip() or not (prospect_project_name or "").strip():
+            return RedirectResponse("/quotations/new", status_code=302)
+
     co = await db.get(Company, company_id)
     num = await next_quotation_number(db, co)
     vu = x_vu
     if vu is None and valid_until.strip():
-        vu = date.fromisoformat(valid_until)
+        try:
+            vu = date.fromisoformat(valid_until.strip())
+        except ValueError:
+            return RedirectResponse("/quotations/new", status_code=302)
+
+    qc = (quote_currency or "USD").strip().upper()[:8] or "USD"
+    if p is not None:
+        qc = (p.currency or "USD")[:8]
+
+    pc_name = ((prospect_client_name or "").strip() or None) if pid is None else None
+    pp_name = ((prospect_project_name or "").strip() or None) if pid is None else None
+
     q = Quotation(
         company_id=company_id,
-        project_id=project_id,
+        project_id=pid,
         number=num,
         status=DocStatus.draft,
         tax_percent=Decimal(str(x_tax)) if x_tax is not None else Decimal(tax_percent or "0"),
         valid_until=vu,
         notes=(x_notes if x_notes is not None else notes.strip()) or None,
         created_by_id=user.id,
+        prospect_client_name=pc_name,
+        prospect_project_name=pp_name,
+        quote_currency=qc,
     )
     db.add(q)
     await db.flush()
@@ -2603,6 +2629,76 @@ async def quotation_new_post(
         db.add(QuotationLine(quotation_id=q.id, position=i, description=d, quantity=qty, unit_price=price))
     await db.commit()
     return RedirectResponse("/quotations", status_code=302)
+
+
+@router.post("/quotations/{quotation_id}/accept")
+async def quotation_accept_post(
+    quotation_id: int,
+    user: User = Depends(get_current_user_web),
+    db: AsyncSession = Depends(get_db),
+    company_id: int = Depends(get_active_company_id),
+):
+    """Accept quotation: link/create project, mark accepted, create sales order from lines."""
+    r = await db.execute(
+        select(Quotation)
+        .options(selectinload(Quotation.lines))
+        .where(Quotation.id == quotation_id, Quotation.company_id == company_id)
+    )
+    q = r.scalar_one_or_none()
+    if not q or q.status not in (DocStatus.draft, DocStatus.sent):
+        return RedirectResponse("/quotations", status_code=302)
+    co = await db.get(Company, company_id)
+    if not co:
+        return RedirectResponse("/quotations", status_code=302)
+
+    proj: Project | None = None
+    if q.project_id:
+        proj = await db.get(Project, q.project_id)
+        if not proj or proj.company_id != company_id:
+            return RedirectResponse("/quotations", status_code=302)
+    else:
+        pname = (q.prospect_project_name or "").strip()
+        cname = (q.prospect_client_name or "").strip()
+        if not pname or not cname:
+            return RedirectResponse("/quotations", status_code=302)
+        pcode = await next_project_code(db, co)
+        proj = Project(
+            company_id=company_id,
+            code=pcode,
+            name=pname[:300],
+            client_name=cname[:300],
+            status=ProjectStatus.active,
+            currency=(q.quote_currency or "USD")[:8],
+        )
+        db.add(proj)
+        await db.flush()
+        q.project_id = proj.id
+
+    q.status = DocStatus.accepted
+    num = await next_sales_order_number(db, co)
+    so = SalesOrder(
+        company_id=company_id,
+        project_id=proj.id,
+        quotation_id=q.id,
+        number=num,
+        status=DocStatus.accepted,
+        tax_percent=q.tax_percent,
+        notes=q.notes,
+    )
+    db.add(so)
+    await db.flush()
+    for line in q.lines:
+        db.add(
+            SalesOrderLine(
+                sales_order_id=so.id,
+                position=line.position,
+                description=line.description,
+                quantity=line.quantity,
+                unit_price=line.unit_price,
+            )
+        )
+    await db.commit()
+    return RedirectResponse(f"/projects/{proj.id}", status_code=302)
 
 
 @router.get("/quotations/{quotation_id}.pdf")

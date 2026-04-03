@@ -51,14 +51,6 @@
     "open-options": {
       "suggested_key": { "default": "Ctrl+Shift+O", "mac": "Command+Shift+O" },
       "description": "__MSG_cmdOptions__"
-    },
-    "export-data": {
-      "suggested_key": { "default": "Ctrl+Shift+X", "mac": "Command+Shift+X" },
-      "description": "__MSG_cmdExport__"
-    },
-    "show-history": {
-      "suggested_key": { "default": "Ctrl+Shift+H", "mac": "Command+Shift+H" },
-      "description": "__MSG_cmdHistory__"
     }
   },
   "content_security_policy": {

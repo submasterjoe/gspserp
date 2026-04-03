@@ -97,29 +97,8 @@ chrome.notifications.onClicked.addListener((id) => {
 });
 
 chrome.commands.onCommand.addListener(async (cmd) => {
-  if (cmd === "show-history") {
-    await chrome.storage.local.set({ optionsTab: "history" });
-    chrome.runtime.openOptionsPage();
-    return;
-  }
   if (cmd === "open-options") {
     chrome.runtime.openOptionsPage();
-    return;
-  }
-  if (cmd === "export-data") {
-    const s = await globalThis.GspsState.load();
-    const payload = JSON.stringify(
-      { version: 3, exportedAt: new Date().toISOString(), app: "gsps-serp-pro", state: s },
-      null,
-      2
-    );
-    await chrome.storage.local.set({ pendingExport: payload });
-    chrome.notifications.create({
-      type: "basic",
-      iconUrl: chrome.runtime.getURL("icons/icon128.png"),
-      title: "GSPS Pro",
-      message: "Open the popup and use Export in Options to download.",
-    });
     return;
   }
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });

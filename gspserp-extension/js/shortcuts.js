@@ -23,6 +23,7 @@
       `<li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> — Analyze SERP</li>` +
       `<li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> — Generate content</li>` +
       `<li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> — Options</li>` +
+      `<li>Export / full history: Options → Backup / History (Chrome allows max 4 shortcuts)</li>` +
       `<li><kbd>Esc</kbd> — Close</li>` +
       `</ul>` +
       `<button type="button" class="btn-close-help">Close</button></div>`;
