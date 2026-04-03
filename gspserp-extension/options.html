@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>GSPS Pro · Dashboard</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+  <div class="app">
+    <aside class="sidebar">
+      <div class="sidebar-brand">GSPS Pro</div>
+      <nav>
+        <button type="button" class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
+        <button type="button" class="nav-btn" data-page="profile">👤 Profile Settings</button>
+        <button type="button" class="nav-btn" data-page="serp">🛠️ SERP Tools</button>
+        <button type="button" class="nav-btn" data-page="api">🔑 API Configuration</button>
+        <button type="button" class="nav-btn" data-page="appearance">🎨 Appearance</button>
+        <button type="button" class="nav-btn" data-page="analytics">📊 Analytics</button>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <!-- Dashboard -->
+      <section class="page-panel active" id="page-dashboard">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="card glass dash-hero">
+          <div class="avatar-lg">
+            <div class="avatar-lg-inner" id="dashAvatarInner"><span id="dashInitials">JD</span></div>
+          </div>
+          <div>
+            <p class="muted" style="margin:0 0 4px;font-weight:600;" id="dashGreeting">Welcome back</p>
+            <h2 style="margin:0;font-size:1.35rem;font-weight:600;letter-spacing:-0.02em;" id="dashName">SERP Pro</h2>
+            <p class="muted" style="margin:8px 0 0;" id="dashStreak">🔥 3 day streak</p>
+          </div>
+          <div style="text-align:right;">
+            <div class="muted" style="font-size:0.72rem;font-weight:600;text-transform:uppercase;">API calls today</div>
+            <div style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;" id="dashUsage">8/50</div>
+          </div>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-pill">
+            <div class="muted" style="font-size:0.72rem;font-weight:600;">All-time actions</div>
+            <div class="val" id="statTotal">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="muted" style="font-size:0.72rem;font-weight:600;">Saved history</div>
+            <div class="val" id="statHistory">0</div>
+          </div>
+          <div class="stat-pill">
+            <div class="muted" style="font-size:0.72rem;font-weight:600;">Status</div>
+            <div class="val" style="font-size:1rem;color:var(--success);">Ready</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Usage (mock · 7 days)</h2>
+          <div class="chart" id="usageChart" role="img" aria-label="Mock usage bars"></div>
+          <div class="chart-labels" id="chartLabels"></div>
+          <p class="muted" style="margin:12px 0 0;">Illustrative bars. Connect your analytics pipeline when ready.</p>
+        </div>
+
+        <div class="card">
+          <h2 class="section-title">Quick actions</h2>
+          <div class="quick-actions">
+            <button type="button" class="btn btn-primary" id="btnQuickSerp">Run test SERP</button>
+            <button type="button" class="btn btn-ghost" id="btnClearCache">Clear cache</button>
+          </div>
+          <p class="muted" style="margin:12px 0 0;">Test SERP uses your default keyword hint from Profile. Clear cache removes recent activity history.</p>
+        </div>
+      </section>
+
+      <!-- Profile -->
+      <section class="page-panel" id="page-profile">
+        <h1 class="page-title">Profile Settings</h1>
+        <div class="card">
+          <div class="profile-upload-row">
+            <div class="avatar-lg">
+              <div class="avatar-lg-inner" id="profileAvatarPrev"><span id="profileInitials">JD</span></div>
+            </div>
+            <div>
+              <label class="label">Avatar</label>
+              <input type="file" id="f_avatar_file" class="hidden-file" accept="image/*" />
+              <button type="button" class="btn btn-ghost" id="btnPickAvatar">Upload image</button>
+              <button type="button" class="btn btn-ghost" id="btnClearAvatar">Use initials</button>
+            </div>
+          </div>
+          <div class="row">
+            <label class="label" for="f_name">Display name</label>
+            <input type="text" class="input" id="f_name" autocomplete="name" />
+          </div>
+          <div class="row">
+            <label class="label" for="f_email">Email (optional)</label>
+            <input type="email" class="input" id="f_email" autocomplete="email" />
+          </div>
+          <div class="row">
+            <label class="label" for="f_keyword_hint">Default keyword preferences</label>
+            <input type="text" class="input" id="f_keyword_hint" placeholder="e.g. best SEO tools" />
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSaveProfile">Save profile</button>
+        </div>
+      </section>
+
+      <!-- SERP -->
+      <section class="page-panel" id="page-serp">
+        <h1 class="page-title">SERP Tools</h1>
+        <div class="card">
+          <div class="row">
+            <label class="label" for="f_country">Country</label>
+            <select class="input" id="f_country"></select>
+          </div>
+          <div class="row">
+            <label class="label" for="f_language">Language</label>
+            <select class="input" id="f_language"></select>
+          </div>
+          <div class="row">
+            <label class="label" for="f_device">Device type</label>
+            <select class="input" id="f_device">
+              <option value="desktop">Desktop</option>
+              <option value="mobile">Mobile</option>
+            </select>
+          </div>
+          <div class="row">
+            <label class="label" for="f_cache_ttl">Cache TTL: <span id="ttlLabel">3600</span>s</label>
+            <input type="range" class="input" id="f_cache_ttl" min="60" max="86400" step="60" />
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSaveSerp">Save SERP settings</button>
+          <p class="muted" style="margin-top:12px;">Analysis hooks: <kbd>js/serp-hooks.js</kbd> — keep function signatures stable.</p>
+        </div>
+      </section>
+
+      <!-- API -->
+      <section class="page-panel" id="page-api">
+        <h1 class="page-title">API Configuration</h1>
+        <div class="card">
+          <div class="row">
+            <label class="label" for="f_api_url">API endpoint URL</label>
+            <input type="url" class="input" id="f_api_url" placeholder="https://api.example.com/v1" />
+          </div>
+          <div class="row">
+            <label class="label" for="f_api_key">API key</label>
+            <div class="pw-wrap">
+              <input type="password" class="input" id="f_api_key" autocomplete="off" />
+              <button type="button" class="toggle-pw" id="btnToggleKey" aria-label="Show or hide API key">Show</button>
+            </div>
+          </div>
+          <div class="row-inline">
+            <button type="button" class="btn btn-secondary" id="btnTestApi">Test connection</button>
+            <button type="button" class="btn btn-primary" id="btnSaveApi">Save credentials</button>
+          </div>
+          <p class="muted" style="margin-top:12px;">Test runs a GET from the extension service worker (respects host permissions).</p>
+        </div>
+      </section>
+
+      <!-- Appearance -->
+      <section class="page-panel" id="page-appearance">
+        <h1 class="page-title">Appearance</h1>
+        <div class="card">
+          <div class="row theme-options">
+            <span class="label" style="margin-bottom:10px;">Theme</span>
+            <div>
+              <label><input type="radio" name="theme" value="light" /> Light</label>
+              <label><input type="radio" name="theme" value="dark" /> Dark</label>
+              <label><input type="radio" name="theme" value="system" /> System</label>
+            </div>
+          </div>
+          <div class="row">
+            <span class="label">Accent color</span>
+            <div class="accent-row" id="accentRow">
+              <button type="button" class="accent-chip" data-accent="blue" title="Blue"></button>
+              <button type="button" class="accent-chip" data-accent="purple" title="Purple"></button>
+              <button type="button" class="accent-chip" data-accent="pink" title="Pink"></button>
+              <button type="button" class="accent-chip" data-accent="green" title="Green"></button>
+            </div>
+          </div>
+          <div class="row">
+            <label class="label" for="f_font_size">Font size: <span id="fontLabel">Medium</span></label>
+            <input type="range" class="input" id="f_font_size" min="0" max="2" step="1" />
+            <div class="range-val">Small · Medium · Large</div>
+          </div>
+          <button type="button" class="btn btn-primary" id="btnSaveAppearance">Save appearance</button>
+        </div>
+      </section>
+
+      <!-- Analytics mock -->
+      <section class="page-panel" id="page-analytics">
+        <h1 class="page-title">Analytics</h1>
+        <div class="analytics-mock">
+          <div class="card">
+            <div class="muted">Avg. position (mock)</div>
+            <div class="val">4.2</div>
+          </div>
+          <div class="card">
+            <div class="muted">CTR lift (mock)</div>
+            <div class="val" style="color:var(--success);">+12%</div>
+          </div>
+          <div class="card">
+            <div class="muted">Tracked keywords</div>
+            <div class="val" id="mockKw">24</div>
+          </div>
+        </div>
+        <div class="card">
+          <p class="muted" style="margin:0;">Placeholder metrics for a future analytics integration. Popup usage and history remain real (stored locally).</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="storage.js"></script>
+  <script src="js/serp-hooks.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

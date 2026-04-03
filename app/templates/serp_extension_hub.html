@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}SERP Chrome extension · {{ app_name }}{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-12 col-xl-10">
+    <p class="text-body-secondary small mb-3">
+      The <strong>glass / gradient UI</strong> you designed lives in the <strong>Chrome extension popup &amp; options</strong> — not in this server-rendered ERP shell.
+      This page links the two products: install from the folder below, then use the toolbar icon for that experience.
+    </p>
+
+    <div class="serp-ext-hub border border-light-subtle">
+      <div class="serp-mesh" aria-hidden="true"></div>
+      <div class="serp-ext-hub-inner">
+        <h1 class="serp-gradient-title mb-2">GSPS SERP Extension</h1>
+        <p class="serp-muted mb-4 mb-md-0" style="max-width: 42rem;">
+          Premium popup (400px), profile card, usage ring, and options dashboard. The ERP website stays fast and accessible; SERP deep work runs in the extension.
+        </p>
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a class="serp-btn" href="https://developer.chrome.com/docs/extensions/mv3/getstarted/development-basics/#load-unpacked" target="_blank" rel="noopener">
+            <i class="fas fa-external-link-alt"></i> Chrome: Load unpacked
+          </a>
+          {% if extension_ready %}
+          <span class="serp-glass-card px-3 py-2 small d-inline-flex align-items-center text-success"><i class="fas fa-check-circle me-2"></i>manifest.json found</span>
+          {% else %}
+          <span class="serp-glass-card px-3 py-2 small d-inline-flex align-items-center text-warning"><i class="fas fa-exclamation-triangle me-2"></i>Extension folder missing</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 mb-3">
+      <h2 class="h6 fw-bold mb-3">Folder to load in Chrome</h2>
+      <p class="small text-body-secondary mb-2">Use <strong>Extensions → Developer mode → Load unpacked</strong> and select this directory (must contain <code>manifest.json</code>):</p>
+      <div class="serp-path">{{ extension_path }}</div>
+      <p class="small text-body-secondary mt-3 mb-0">
+        After editing extension files, click <strong>Reload</strong> on the extension card. Reloading the GSPS website alone does not update the extension UI.
+      </p>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6 fw-bold">Why the ERP UI looks different</h3>
+            <ul class="small text-body-secondary mb-0 ps-3">
+              <li class="mb-2">This app uses <code>app/templates</code> (Bootstrap + shell). The extension uses <code>gspserp-extension/*.html</code> + <code>css/theme.css</code>.</li>
+              <li>They are separate front-ends. Connecting them means: this hub + optional API calls from <code>serp-hooks.js</code> to your <code>/api/v1</code>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <h3 class="h6 fw-bold">Optional next step (API)</h3>
+            <p class="small text-body-secondary mb-0">
+              Wire <span class="font-monospace">gspserp-extension/js/serp-hooks.js</span> to post results to GSPS when you are ready. Session cookies are not shared with the extension; use JWT from the API docs or a dedicated integration token.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

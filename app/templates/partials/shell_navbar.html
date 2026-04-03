@@ -2,11 +2,10 @@
 <nav class="navbar navbar-expand-lg no-print bw-navbar">
   <div class="container-fluid px-3 align-items-center gap-2">
     <a class="navbar-brand d-flex align-items-center gap-2 py-2 me-2" href="{% if user %}/dashboard{% else %}/{% endif %}">
-      <span class="rounded-2 d-inline-flex align-items-center justify-content-center text-white fw-bold shadow-sm"
-            style="width:2rem;height:2rem;font-size:.9rem;background:linear-gradient(145deg,#6366f1,#4f46e5);">
+      <span class="gsps-brand-icon d-inline-flex align-items-center justify-content-center text-white shadow-sm">
         <i class="fas fa-layer-group" style="font-size:0.85rem;"></i>
       </span>
-      <span class="d-none d-sm-inline">{{ app_name }}</span>
+      <span class="d-none d-sm-inline fw-bold tracking-tight">{{ app_name }}</span>
     </a>
 
     {% if user %}

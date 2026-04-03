@@ -229,6 +229,39 @@ def _public_base_url(request: Request) -> str:
     return str(request.base_url).rstrip("/")
 
 
+def _serp_extension_dir() -> Path:
+    """coding/gspserp-extension (sibling of app/)."""
+    return Path(__file__).resolve().parent.parent.parent / "gspserp-extension"
+
+
+@router.get("/tools/serp-extension", response_class=HTMLResponse)
+async def serp_extension_hub(
+    request: Request,
+    user: User = Depends(get_current_user_web),
+    db: AsyncSession = Depends(get_db),
+    company_id: int = Depends(get_active_company_id),
+):
+    ext = _serp_extension_dir()
+    ready = ext.is_dir() and (ext / "manifest.json").is_file()
+    return templates.TemplateResponse(
+        "serp_extension_hub.html",
+        _tc(
+            await _with_approvals_badge(
+                db,
+                user,
+                company_id,
+                {
+                    "request": request,
+                    "user": user,
+                    "active_company_id": company_id,
+                    "extension_path": str(ext.resolve()),
+                    "extension_ready": ready,
+                },
+            )
+        ),
+    )
+
+
 def _lines_from_form(form: dict, n: int = 8) -> list[tuple[str, Decimal, Decimal]]:
     rows: list[tuple[str, Decimal, Decimal]] = []
     for i in range(n):

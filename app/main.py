@@ -1,8 +1,11 @@
 import os
 from contextlib import asynccontextmanager
 
+from pathlib import Path
+
 from fastapi import FastAPI, Request
 from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import get_settings
@@ -38,6 +41,10 @@ app.add_middleware(SessionMiddleware, secret_key=settings.secret_key, same_site=
 app.include_router(web_router.router)
 app.include_router(finance_pages.router)
 app.include_router(api_v1.router, prefix="/api/v1")
+
+_static = Path(__file__).resolve().parent / "static"
+if _static.is_dir():
+    app.mount("/static", StaticFiles(directory=str(_static)), name="static")
 
 
 @app.exception_handler(LoginRequired)

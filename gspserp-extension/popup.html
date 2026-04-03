@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GSPS Pro</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+
+  <div class="popup-wrap">
+    <section class="profile-card">
+      <div class="profile-row">
+        <div class="avatar-ring">
+          <div class="avatar-inner" id="avatarInner">
+            <span id="avatarInitials">JD</span>
+          </div>
+        </div>
+        <div class="profile-meta">
+          <p class="welcome" id="welcomeLine">Good morning, SERP Pro</p>
+          <p class="streak" id="streakLine">🔥 3 day streak</p>
+        </div>
+        <div class="usage-col">
+          <svg class="ring-svg" viewBox="0 0 44 44" aria-hidden="true">
+            <defs>
+              <linearGradient id="popupRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3B82F6" />
+                <stop offset="100%" stop-color="#8B5CF6" />
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="22" cy="22" r="18" />
+            <circle class="ring-fg" id="usageRingFg" cx="22" cy="22" r="18" />
+          </svg>
+          <span class="ring-label" id="usageRingLabel">8/50</span>
+        </div>
+        <button type="button" class="btn-icon-pencil" id="btnEditProfile" title="Edit profile" aria-label="Edit profile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <section class="actions">
+      <button type="button" class="btn-pri" id="btnAnalyzeSerp">
+        🔍 Analyze SERP
+      </button>
+      <button type="button" class="btn-sec" id="btnGenerateContent">
+        ✨ Generate Content
+      </button>
+    </section>
+
+    <section class="recent-card">
+      <div class="recent-head">
+        <span class="recent-title">Recent activity</span>
+        <button type="button" class="btn-clear" id="btnClearHistory">Clear</button>
+      </div>
+      <div id="recentSkeleton" class="skeleton" style="display: none;"></div>
+      <ul class="recent-list" id="recentList"></ul>
+      <p class="recent-empty" id="recentEmpty">No searches yet.</p>
+    </section>
+  </div>
+
+  <footer class="popup-footer">
+    <span class="footer-brand" id="footerBrand">GSPS Pro · v…</span>
+    <button type="button" class="btn-theme-corner" id="btnThemeToggle" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+  </footer>
+
+  <script src="storage.js"></script>
+  <script src="js/serp-hooks.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
