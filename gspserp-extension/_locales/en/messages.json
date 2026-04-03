@@ -1,0 +1,38 @@
+{
+  "extName": {
+    "message": "GSPS SERP Pro",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Professional SERP analysis and content generation for GSPS.",
+    "description": "Short description"
+  },
+  "extTitle": {
+    "message": "GSPS SERP Pro",
+    "description": "Browser action title"
+  },
+  "cmdPopup": {
+    "message": "Open extension popup"
+  },
+  "cmdAnalyze": {
+    "message": "Analyze current tab as SERP keyword"
+  },
+  "cmdGen": {
+    "message": "Generate content for last search"
+  },
+  "cmdOptions": {
+    "message": "Open options page"
+  },
+  "cmdExport": {
+    "message": "Export data reminder"
+  },
+  "cmdHistory": {
+    "message": "Open history in options"
+  },
+  "toastSaved": {
+    "message": "Saved."
+  },
+  "errorLimit": {
+    "message": "Daily limit reached. Upgrade or wait until tomorrow."
+  }
+}

@@ -1,7 +1,10 @@
 /**
  * GSPS Pro — popup (400px fixed) profile-first UI
  */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+@import "css/theme.css";
+@import "css/toast.css";
+@import "css/loading-states.css";
+@import "css/animations.css";
 
 :root {
   --bg: #f8fafc;
@@ -192,6 +195,21 @@ body.dark-mode .profile-card {
   gap: 4px;
 }
 
+.usage-col--btn {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.usage-col--btn:focus-visible {
+  outline: 2px solid var(--grad-a);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
 .ring-svg {
   width: 40px;
   height: 40px;
@@ -208,9 +226,9 @@ body.dark-mode .profile-card {
 }
 
 .ring-fg {
-  stroke: url(#popupRingGrad);
+  stroke: var(--ring-use, #3b82f6);
   stroke-linecap: round;
-  transition: stroke-dashoffset 0.35s ease;
+  transition: stroke-dashoffset 0.35s ease, stroke 0.3s ease;
 }
 
 .ring-label {
@@ -383,6 +401,53 @@ body.dark-mode .profile-card {
   border-bottom: none;
 }
 
+.recent-item-btn {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 2px 8px;
+  align-items: start;
+  text-align: left;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  border-radius: 8px;
+}
+
+.recent-item-btn:hover {
+  background: rgba(59, 130, 246, 0.06);
+}
+
+.recent-item-btn .dot {
+  grid-row: 1 / span 2;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-top: 6px;
+}
+
+.recent-item-btn .dot.ok {
+  background: var(--success);
+}
+.recent-item-btn .dot.bad {
+  background: var(--error);
+}
+
+.recent-item-btn .kw {
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.recent-item-btn .sub {
+  grid-column: 2;
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
 .recent-list .sub {
   font-size: 0.68rem;
   color: var(--muted);
@@ -480,16 +545,41 @@ body.dark-mode .popup-footer {
   }
 }
 
-.skeleton {
-  height: 36px;
-  border-radius: 8px;
-  background: linear-gradient(90deg, var(--border), transparent, var(--border));
-  background-size: 200% 100%;
-  animation: sh 1s ease infinite;
+.suggest-row {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1px dashed var(--border);
+  background: rgba(59, 130, 246, 0.04);
 }
 
-@keyframes sh {
-  to {
-    background-position: -200% 0;
-  }
+.suggest-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.suggest-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.suggest-chips button {
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  cursor: pointer;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggest-chips button:hover {
+  border-color: var(--grad-a);
 }

@@ -1,22 +1,67 @@
 {
   "manifest_version": 3,
-  "name": "GSPS ERP SERP Analyzer",
-  "version": "2.0.0",
-  "description": "Premium SERP analysis companion — profile, usage streaks, and tools for GSPS ERP users.",
+  "name": "__MSG_extName__",
+  "version": "3.0.0",
+  "description": "__MSG_extDescription__",
+  "default_locale": "en",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "alarms",
+    "notifications",
+    "contextMenus"
+  ],
+  "optional_permissions": ["offscreen"],
+  "host_permissions": ["http://*/*", "https://*/*", "http://localhost:5000/*"],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "GSPS Pro"
+    "default_title": "__MSG_extTitle__",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
   },
-  "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["https://*/*", "http://*/*"],
   "background": {
     "service_worker": "background.js"
   },
+  "commands": {
+    "_execute_action": {
+      "suggested_key": { "default": "Ctrl+Shift+S", "mac": "Command+Shift+S" },
+      "description": "__MSG_cmdPopup__"
+    },
+    "analyze-serp": {
+      "suggested_key": { "default": "Ctrl+Shift+A", "mac": "Command+Shift+A" },
+      "description": "__MSG_cmdAnalyze__"
+    },
+    "generate-content": {
+      "suggested_key": { "default": "Ctrl+Shift+G", "mac": "Command+Shift+G" },
+      "description": "__MSG_cmdGen__"
+    },
+    "open-options": {
+      "suggested_key": { "default": "Ctrl+Shift+O", "mac": "Command+Shift+O" },
+      "description": "__MSG_cmdOptions__"
+    },
+    "export-data": {
+      "suggested_key": { "default": "Ctrl+Shift+X", "mac": "Command+Shift+X" },
+      "description": "__MSG_cmdExport__"
+    },
+    "show-history": {
+      "suggested_key": { "default": "Ctrl+Shift+H", "mac": "Command+Shift+H" },
+      "description": "__MSG_cmdHistory__"
+    }
+  },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com; img-src 'self' data: https:;"
+    "extension_pages": "script-src 'self'; object-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' http://*/* https://*/* http://localhost:*/*;"
   }
 }

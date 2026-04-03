@@ -1,0 +1,111 @@
+/**
+ * Micro-interactions: confetti burst, panel transitions, shortcut overlay.
+ */
+@keyframes gsps-confetti-fall {
+  0% {
+    transform: translateY(-12px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120px) rotate(540deg);
+    opacity: 0;
+  }
+}
+
+.gsps-confetti-host {
+  position: fixed;
+  pointer-events: none;
+  inset: 0;
+  z-index: 99999;
+  overflow: hidden;
+}
+
+.gsps-confetti-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: gsps-confetti-fall 1.4s ease-out forwards;
+}
+
+.gsps-shortcuts-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 100001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.gsps-shortcuts-panel {
+  background: var(--card, #fff);
+  color: var(--text, #1e293b);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow-hover, 0 20px 50px rgba(0, 0, 0, 0.2));
+}
+
+.gsps-shortcuts-panel h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.gsps-shortcuts-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.gsps-shortcuts-panel kbd {
+  font-family: ui-monospace, monospace;
+  font-size: 0.82em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.btn-close-help {
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.page-panel {
+  animation: gsps-panel-in 0.2s ease;
+}
+
+@keyframes gsps-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ring-pulse {
+  animation: gsps-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes gsps-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(239, 68, 68, 0));
+  }
+  50% {
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.55));
+  }
+}

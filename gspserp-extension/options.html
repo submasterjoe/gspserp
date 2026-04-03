@@ -3,212 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GSPS Pro · Dashboard</title>
+  <title>GSPS SERP Pro · Options</title>
   <link rel="stylesheet" href="options.css" />
 </head>
 <body>
-  <div class="toast-host" id="toastHost" aria-live="polite"></div>
+  <div id="toastHost" class="gsps-toast-host" aria-live="polite"></div>
 
   <div class="app">
-    <aside class="sidebar">
-      <div class="sidebar-brand">GSPS Pro</div>
+    <aside class="sidebar" aria-label="Settings navigation">
+      <div class="sidebar-brand">GSPS SERP Pro</div>
       <nav>
         <button type="button" class="nav-btn active" data-page="dashboard">📊 Dashboard</button>
-        <button type="button" class="nav-btn" data-page="profile">👤 Profile Settings</button>
+        <button type="button" class="nav-btn" data-page="profile">👤 Profile</button>
         <button type="button" class="nav-btn" data-page="serp">🛠️ SERP Tools</button>
-        <button type="button" class="nav-btn" data-page="api">🔑 API Configuration</button>
+        <button type="button" class="nav-btn" data-page="api">🔑 API</button>
         <button type="button" class="nav-btn" data-page="appearance">🎨 Appearance</button>
-        <button type="button" class="nav-btn" data-page="analytics">📊 Analytics</button>
+        <button type="button" class="nav-btn" data-page="analytics">📈 Analytics</button>
+        <button type="button" class="nav-btn" data-page="history">📜 History</button>
+        <button type="button" class="nav-btn" data-page="batch">📑 Batch</button>
+        <button type="button" class="nav-btn" data-page="backup">💾 Backup</button>
       </nav>
     </aside>
 
-    <main class="main">
-      <!-- Dashboard -->
+    <main class="main" id="main">
       <section class="page-panel active" id="page-dashboard">
         <h1 class="page-title">Dashboard</h1>
         <div class="card glass dash-hero">
           <div class="avatar-lg">
-            <div class="avatar-lg-inner" id="dashAvatarInner"><span id="dashInitials">JD</span></div>
+            <div class="avatar-lg-inner" id="dashAvatarInner"><span>JD</span></div>
           </div>
           <div>
-            <p class="muted" style="margin:0 0 4px;font-weight:600;" id="dashGreeting">Welcome back</p>
-            <h2 style="margin:0;font-size:1.35rem;font-weight:600;letter-spacing:-0.02em;" id="dashName">SERP Pro</h2>
-            <p class="muted" style="margin:8px 0 0;" id="dashStreak">🔥 3 day streak</p>
+            <p class="muted" id="dashGreeting">Welcome</p>
+            <h2 class="dash-name" id="dashName">SERP Professional</h2>
+            <p class="muted" id="dashStreak">🔥 0 day streak</p>
+            <div id="badgeRow" class="badge-row"></div>
           </div>
-          <div style="text-align:right;">
-            <div class="muted" style="font-size:0.72rem;font-weight:600;text-transform:uppercase;">API calls today</div>
-            <div style="font-size:1.4rem;font-weight:700;letter-spacing:-0.02em;" id="dashUsage">8/50</div>
-          </div>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-pill">
-            <div class="muted" style="font-size:0.72rem;font-weight:600;">All-time actions</div>
-            <div class="val" id="statTotal">0</div>
-          </div>
-          <div class="stat-pill">
-            <div class="muted" style="font-size:0.72rem;font-weight:600;">Saved history</div>
-            <div class="val" id="statHistory">0</div>
-          </div>
-          <div class="stat-pill">
-            <div class="muted" style="font-size:0.72rem;font-weight:600;">Status</div>
-            <div class="val" style="font-size:1rem;color:var(--success);">Ready</div>
+          <div class="dash-usage">
+            <span class="muted">Today</span>
+            <div class="dash-usage-num" id="dashUsage">0/50</div>
           </div>
         </div>
-
-        <div class="card">
-          <h2 class="section-title">Usage (mock · 7 days)</h2>
-          <div class="chart" id="usageChart" role="img" aria-label="Mock usage bars"></div>
-          <div class="chart-labels" id="chartLabels"></div>
-          <p class="muted" style="margin:12px 0 0;">Illustrative bars. Connect your analytics pipeline when ready.</p>
-        </div>
-
         <div class="card">
           <h2 class="section-title">Quick actions</h2>
           <div class="quick-actions">
             <button type="button" class="btn btn-primary" id="btnQuickSerp">Run test SERP</button>
-            <button type="button" class="btn btn-ghost" id="btnClearCache">Clear cache</button>
+            <button type="button" class="btn btn-ghost" id="btnClearCache">Clear activity history</button>
+            <button type="button" class="btn btn-ghost" id="btnProcessQueue">Sync offline queue</button>
           </div>
-          <p class="muted" style="margin:12px 0 0;">Test SERP uses your default keyword hint from Profile. Clear cache removes recent activity history.</p>
         </div>
       </section>
 
-      <!-- Profile -->
       <section class="page-panel" id="page-profile">
-        <h1 class="page-title">Profile Settings</h1>
+        <h1 class="page-title">Profile</h1>
         <div class="card">
           <div class="profile-upload-row">
-            <div class="avatar-lg">
-              <div class="avatar-lg-inner" id="profileAvatarPrev"><span id="profileInitials">JD</span></div>
-            </div>
+            <div class="avatar-lg"><div class="avatar-lg-inner" id="profileAvatarPrev"><span>JD</span></div></div>
             <div>
               <label class="label">Avatar</label>
-              <input type="file" id="f_avatar_file" class="hidden-file" accept="image/*" />
-              <button type="button" class="btn btn-ghost" id="btnPickAvatar">Upload image</button>
+              <input type="file" id="f_avatar_file" class="hidden-file" accept="image/*" aria-label="Upload avatar" />
+              <button type="button" class="btn btn-ghost" id="btnPickAvatar">Upload (max 500KB)</button>
               <button type="button" class="btn btn-ghost" id="btnClearAvatar">Use initials</button>
             </div>
           </div>
-          <div class="row">
-            <label class="label" for="f_name">Display name</label>
-            <input type="text" class="input" id="f_name" autocomplete="name" />
-          </div>
-          <div class="row">
-            <label class="label" for="f_email">Email (optional)</label>
+          <div class="row"><label class="label" for="f_name">Display name</label>
+            <input type="text" class="input" id="f_name" autocomplete="name" aria-required="true" />
+            <span class="field-hint" id="hint_name"></span></div>
+          <div class="row"><label class="label" for="f_email">Email (optional)</label>
             <input type="email" class="input" id="f_email" autocomplete="email" />
-          </div>
-          <div class="row">
-            <label class="label" for="f_keyword_hint">Default keyword preferences</label>
-            <input type="text" class="input" id="f_keyword_hint" placeholder="e.g. best SEO tools" />
-          </div>
+            <span class="field-hint" id="hint_email"></span></div>
+          <div class="row"><label class="label">Avatar gradient</label>
+            <div class="accent-row" id="avatarColorRow"></div></div>
+          <div class="row"><label class="label" for="f_keyword_hint">Default keyword</label>
+            <input type="text" class="input" id="f_keyword_hint" minlength="2" maxlength="100" /></div>
+          <div class="row"><label class="label" for="f_daily_limit">Daily limit</label>
+            <input type="number" class="input" id="f_daily_limit" min="1" max="100000" /></div>
           <button type="button" class="btn btn-primary" id="btnSaveProfile">Save profile</button>
         </div>
       </section>
 
-      <!-- SERP -->
       <section class="page-panel" id="page-serp">
-        <h1 class="page-title">SERP Tools</h1>
+        <h1 class="page-title">SERP tools</h1>
         <div class="card">
-          <div class="row">
-            <label class="label" for="f_country">Country</label>
-            <select class="input" id="f_country"></select>
-          </div>
-          <div class="row">
-            <label class="label" for="f_language">Language</label>
-            <select class="input" id="f_language"></select>
-          </div>
-          <div class="row">
-            <label class="label" for="f_device">Device type</label>
-            <select class="input" id="f_device">
-              <option value="desktop">Desktop</option>
-              <option value="mobile">Mobile</option>
-            </select>
-          </div>
-          <div class="row">
-            <label class="label" for="f_cache_ttl">Cache TTL: <span id="ttlLabel">3600</span>s</label>
+          <div class="row"><label class="label" for="f_country">Country</label><select class="input" id="f_country"></select></div>
+          <div class="row"><label class="label" for="f_language">Language</label><select class="input" id="f_language"></select></div>
+          <div class="row"><label class="label" for="f_device">Device</label>
+            <select class="input" id="f_device"><option value="desktop">Desktop</option><option value="mobile">Mobile</option></select></div>
+          <div class="row"><label class="label" for="f_cache_ttl">Cache TTL (seconds)</label>
             <input type="range" class="input" id="f_cache_ttl" min="60" max="86400" step="60" />
-          </div>
-          <button type="button" class="btn btn-primary" id="btnSaveSerp">Save SERP settings</button>
-          <p class="muted" style="margin-top:12px;">Analysis hooks: <kbd>js/serp-hooks.js</kbd> — keep function signatures stable.</p>
+            <span id="ttlLabel" class="muted"></span></div>
+          <button type="button" class="btn btn-primary" id="btnSaveSerp">Save</button>
         </div>
       </section>
 
-      <!-- API -->
       <section class="page-panel" id="page-api">
-        <h1 class="page-title">API Configuration</h1>
+        <h1 class="page-title">API configuration</h1>
         <div class="card">
-          <div class="row">
-            <label class="label" for="f_api_url">API endpoint URL</label>
-            <input type="url" class="input" id="f_api_url" placeholder="https://api.example.com/v1" />
-          </div>
-          <div class="row">
-            <label class="label" for="f_api_key">API key</label>
+          <div class="row"><label class="label" for="f_api_url">API base URL</label>
+            <input type="url" class="input" id="f_api_url" placeholder="http://localhost:5000/api/v1" />
+            <span class="field-hint" id="hint_url"></span></div>
+          <div class="row"><label class="label" for="f_api_key">API key / JWT</label>
             <div class="pw-wrap">
-              <input type="password" class="input" id="f_api_key" autocomplete="off" />
-              <button type="button" class="toggle-pw" id="btnToggleKey" aria-label="Show or hide API key">Show</button>
+              <input type="password" class="input" id="f_api_key" autocomplete="off" minlength="10" />
+              <button type="button" class="toggle-pw" id="btnToggleKey" aria-label="Show or hide key">Show</button>
             </div>
-          </div>
+            <span class="field-hint" id="hint_key"></span></div>
           <div class="row-inline">
             <button type="button" class="btn btn-secondary" id="btnTestApi">Test connection</button>
             <button type="button" class="btn btn-primary" id="btnSaveApi">Save credentials</button>
           </div>
-          <p class="muted" style="margin-top:12px;">Test runs a GET from the extension service worker (respects host permissions).</p>
         </div>
       </section>
 
-      <!-- Appearance -->
       <section class="page-panel" id="page-appearance">
         <h1 class="page-title">Appearance</h1>
         <div class="card">
-          <div class="row theme-options">
-            <span class="label" style="margin-bottom:10px;">Theme</span>
-            <div>
-              <label><input type="radio" name="theme" value="light" /> Light</label>
+          <div class="row theme-options"><span class="label">Theme</span>
+            <div><label><input type="radio" name="theme" value="light" /> Light</label>
               <label><input type="radio" name="theme" value="dark" /> Dark</label>
-              <label><input type="radio" name="theme" value="system" /> System</label>
-            </div>
-          </div>
-          <div class="row">
-            <span class="label">Accent color</span>
-            <div class="accent-row" id="accentRow">
-              <button type="button" class="accent-chip" data-accent="blue" title="Blue"></button>
-              <button type="button" class="accent-chip" data-accent="purple" title="Purple"></button>
-              <button type="button" class="accent-chip" data-accent="pink" title="Pink"></button>
-              <button type="button" class="accent-chip" data-accent="green" title="Green"></button>
-            </div>
-          </div>
-          <div class="row">
-            <label class="label" for="f_font_size">Font size: <span id="fontLabel">Medium</span></label>
-            <input type="range" class="input" id="f_font_size" min="0" max="2" step="1" />
-            <div class="range-val">Small · Medium · Large</div>
-          </div>
+              <label><input type="radio" name="theme" value="system" /> System</label></div></div>
+          <div class="row"><span class="label">Accent</span><div class="accent-row" id="accentRow">
+            <button type="button" class="accent-chip" data-accent="blue" title="Blue"></button>
+            <button type="button" class="accent-chip" data-accent="purple" title="Purple"></button>
+            <button type="button" class="accent-chip" data-accent="pink" title="Pink"></button>
+            <button type="button" class="accent-chip" data-accent="green" title="Green"></button>
+          </div></div>
+          <div class="row"><label class="label" for="f_font_size">Font size</label>
+            <input type="range" id="f_font_size" min="0" max="2" step="1" />
+            <span id="fontLabel" class="muted"></span></div>
           <button type="button" class="btn btn-primary" id="btnSaveAppearance">Save appearance</button>
         </div>
       </section>
 
-      <!-- Analytics mock -->
       <section class="page-panel" id="page-analytics">
         <h1 class="page-title">Analytics</h1>
-        <div class="analytics-mock">
-          <div class="card">
-            <div class="muted">Avg. position (mock)</div>
-            <div class="val">4.2</div>
-          </div>
-          <div class="card">
-            <div class="muted">CTR lift (mock)</div>
-            <div class="val" style="color:var(--success);">+12%</div>
-          </div>
-          <div class="card">
-            <div class="muted">Tracked keywords</div>
-            <div class="val" id="mockKw">24</div>
-          </div>
+        <div class="card">
+          <h2 class="section-title">Daily usage (30 days)</h2>
+          <canvas id="chartLine" width="600" height="200" role="img" aria-label="Daily usage chart"></canvas>
         </div>
         <div class="card">
-          <p class="muted" style="margin:0;">Placeholder metrics for a future analytics integration. Popup usage and history remain real (stored locally).</p>
+          <h2 class="section-title">Top keywords</h2>
+          <canvas id="chartBar" width="600" height="240" role="img"></canvas>
+        </div>
+        <div class="card">
+          <h2 class="section-title">Success rate</h2>
+          <canvas id="chartPie" width="200" height="200" role="img"></canvas>
+        </div>
+        <div class="card">
+          <h2 class="section-title">Hourly activity</h2>
+          <canvas id="chartHeat" width="600" height="140" role="img"></canvas>
+        </div>
+        <div class="row-inline">
+          <button type="button" class="btn btn-ghost" id="btnPngExport">Export chart PNG (line)</button>
+        </div>
+      </section>
+
+      <section class="page-panel" id="page-history">
+        <h1 class="page-title">History</h1>
+        <div class="card">
+          <div class="row-inline">
+            <input type="search" class="input" id="histFilter" placeholder="Filter keywords…" aria-label="Filter history" />
+            <select class="input" id="histSort" style="max-width:220px">
+              <option value="date-desc">Newest first</option>
+              <option value="date-asc">Oldest first</option>
+              <option value="kw-asc">Keyword A–Z</option>
+              <option value="count-desc">Results count</option>
+            </select>
+            <button type="button" class="btn btn-ghost" id="btnExportHistCsv">Export CSV</button>
+            <button type="button" class="btn btn-ghost" id="btnExportHistJson">Export JSON</button>
+          </div>
+          <div class="table-wrap" role="region" aria-label="Search history" tabindex="0">
+            <table class="data-table" id="histTable">
+              <thead><tr><th></th><th>Keyword</th><th>When</th><th>Results</th><th></th></tr></thead>
+              <tbody id="histBody"></tbody>
+            </table>
+          </div>
+          <div class="row-inline">
+            <button type="button" class="btn btn-secondary" id="btnHistPrev">Previous</button>
+            <span id="histPageLabel" class="muted"></span>
+            <button type="button" class="btn btn-secondary" id="btnHistNext">Next</button>
+            <button type="button" class="btn btn-ghost" id="btnClearAllHist" style="margin-left:auto">Clear all…</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="page-panel" id="page-batch">
+        <h1 class="page-title">Batch CSV</h1>
+        <div class="card">
+          <p class="muted">Format: <code>keyword,country,device</code> — one row per line, max 100 rows.</p>
+          <input type="file" id="batchFile" accept=".csv,text/csv" aria-label="CSV file" />
+          <pre id="batchPreview" class="batch-preview"></pre>
+          <div class="row-inline">
+            <button type="button" class="btn btn-primary" id="btnRunBatch">Run batch</button>
+            <button type="button" class="btn btn-ghost" id="btnPauseBatch" disabled>Pause</button>
+          </div>
+          <p id="batchProgress" class="muted"></p>
+        </div>
+      </section>
+
+      <section class="page-panel" id="page-backup">
+        <h1 class="page-title">Backup &amp; restore</h1>
+        <div class="card">
+          <button type="button" class="btn btn-primary" id="btnExportFull">Export full backup (JSON)</button>
+          <p class="muted">Includes profile, settings, history, and achievements.</p>
+        </div>
+        <div class="card">
+          <label class="label">Import backup</label>
+          <input type="file" id="importFile" accept=".json,application/json" />
+          <div class="row">
+            <label><input type="radio" name="importMode" value="merge" checked /> Merge</label>
+            <label><input type="radio" name="importMode" value="replace" /> Replace</label>
+          </div>
+          <button type="button" class="btn btn-secondary" id="btnImport">Import</button>
         </div>
       </section>
     </main>
   </div>
 
+  <script src="js/state-manager.js"></script>
+  <script src="js/offline-queue.js"></script>
+  <script src="js/api-core.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/error-handler.js"></script>
+  <script src="js/profile-manager.js"></script>
+  <script src="js/usage-tracker.js"></script>
+  <script src="js/history-manager.js"></script>
+  <script src="js/achievements.js"></script>
+  <script src="js/export-import.js"></script>
+  <script src="js/batch-ops.js"></script>
+  <script src="js/analytics-charts.js"></script>
+  <script src="js/shortcuts.js"></script>
   <script src="storage.js"></script>
   <script src="js/serp-hooks.js"></script>
   <script src="options.js"></script>

@@ -1,0 +1,52 @@
+/**
+ * Skeletons and loading overlays — shimmer, min-height to reduce layout shift.
+ */
+.skeleton-block {
+  min-height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.2) 25%, rgba(148, 163, 184, 0.08) 50%, rgba(148, 163, 184, 0.2) 75%);
+  background-size: 200% 100%;
+  animation: gsps-shimmer 1.2s ease-in-out infinite;
+}
+
+body.dark-mode .skeleton-block {
+  background: linear-gradient(90deg, rgba(148, 163, 184, 0.12) 25%, rgba(148, 163, 184, 0.05) 50%, rgba(148, 163, 184, 0.12) 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes gsps-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+.gsps-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(248, 250, 252, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 99998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+body.dark-mode .gsps-loading-overlay {
+  background: rgba(10, 10, 15, 0.65);
+}
+
+.gsps-spinner {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(59, 130, 246, 0.25);
+  border-top-color: #3b82f6;
+  animation: gsps-spin 0.75s linear infinite;
+}
+
+@keyframes gsps-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
